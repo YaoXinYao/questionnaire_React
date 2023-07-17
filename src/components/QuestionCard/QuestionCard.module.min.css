@@ -1,0 +1,1 @@
+.container{margin-bottom:20px;padding:12px;border-radius:3px;background-color:#fff}.container:hover{box-shadow:0 4px 10px #e8e8e8}.title{display:flex}.title .left{flex:1}.title .right{flex:1;text-align:center;font-size:12px}.button-container{display:flex}.button-container .left{flex:1}.button-container .right{flex:1;text-align:center}.button-container .right button{color:#999}

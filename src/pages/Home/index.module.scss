@@ -1,0 +1,19 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 64px - 68px);
+  //https://color.oulu.me/
+  background-image: linear-gradient(to right, #9890e3 0%, #b1f4cf 100%);
+
+  .info {
+    text-align: center;
+
+    button {
+      height: 60px;
+      font-size: 22px;
+      border-radius: 3px;
+    }
+  }
+}

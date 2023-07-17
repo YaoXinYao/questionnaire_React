@@ -1,12 +1,9 @@
-import React, { useState } from "react";
-import "./App.css";
+import React from "react";
+import { RouterProvider } from "react-router-dom";
+import routerConfig from "./router/index";
 
 function App() {
-  return (
-    <div className="App">
-      <p>不好</p>
-    </div>
-  );
+  return <RouterProvider router={routerConfig}></RouterProvider>;
 }
 
 export default App;
