@@ -1,40 +1,21 @@
 import { useTitle } from "ahooks";
-import { Typography } from "antd";
+import { Empty, Pagination, Spin, Typography } from "antd";
 import React, { useState } from "react";
+import ListPage from "../../../components/ListPage";
 import ListSearch from "../../../components/ListSearch";
 import QuestionCard from "../../../components/QuestionCard/QuestionCard";
+import useLoadQuestionListData from "../../../hooks/useLoadQuestionListData";
 import styles from "./index.module.scss";
 const { Title } = Typography;
-let rawQuestionList = [
-  {
-    _id: "q1",
-    title: "问卷1",
-    isPublished: false,
-    isStar: true,
-    answerCount: 5,
-    createAt: "3月2日 13：32",
-  },
-  {
-    _id: "q2",
-    title: "问卷2",
-    isPublished: true,
-    isStar: true,
-    answerCount: 5,
-    createAt: "3月2日 13：32",
-  },
-  {
-    _id: "q3",
-    title: "问卷3",
-    isPublished: false,
-    isStar: true,
-    answerCount: 5,
-    createAt: "3月2日 13：32",
-  },
-];
 
 const Star = () => {
   useTitle("乐答问卷-星标问卷");
-  const [questionList, setQuestionList] = useState(rawQuestionList);
+  const {
+    loading,
+    error,
+    data = {},
+  } = useLoadQuestionListData({ isStar: true });
+  const { list = {}, total = 0 } = data;
   return (
     <>
       <div className={styles.header}>
@@ -46,13 +27,22 @@ const Star = () => {
         </div>
       </div>
       <div className={styles.content}>
-        {questionList.length > 0 &&
-          questionList.map((q) => {
+        {loading && (
+          <div style={{ textAlign: "center" }}>
+            <Spin />
+          </div>
+        )}
+        {!loading && list.length === 0 && <Empty description="暂无数据" />}
+        {!loading &&
+          list.length > 0 &&
+          list.map((q: any) => {
             const { _id } = q;
             return <QuestionCard key={_id} {...q}></QuestionCard>;
           })}
       </div>
-      <div className={styles.footer}>分页</div>
+      <div className={styles.footer}>
+        <ListPage total={total}/>
+      </div>
     </>
   );
 };

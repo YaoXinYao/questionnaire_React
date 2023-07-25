@@ -1,47 +1,105 @@
-import { useTitle } from "ahooks";
-import React, { useState } from "react";
+import { useDebounceFn, useRequest, useTitle } from "ahooks";
+import React, { useEffect, useRef, useState } from "react";
 import QuestionCard from "../../../components/QuestionCard/QuestionCard";
 import styles from "./index.module.scss";
-import { Empty, Typography } from "antd";
+import { Empty, Spin, Typography } from "antd";
 import ListSearch from "../../../components/ListSearch";
+import { useSearchParams } from "react-router-dom";
+import { getQuestionListService } from "../../../services/question";
+import {
+  LIST_PAGE_SIZE,
+  LIST_PAGE_SIZE_PARAM_KEY,
+  LIST_SEARCH_PARAM_KEY,
+} from "../../../constant";
 const { Title } = Typography;
 
 const List = () => {
   useTitle("我的问卷");
-  const [questionList, setQuestionList] = useState([
-    {
-      _id: "q1",
-      title: "问卷1",
-      isPublished: false,
-      isStar: true,
-      answerCount: 5,
-      createAt: "3月2日 13：32",
+
+  //是否已经开始加载
+  const [started, setStarted] = useState(false);
+  const [page, setPage] = useState(1);
+  const [list, setList] = useState([]);
+  const [total, setTotal] = useState(0);
+  const haveMoreData = total > list.length;
+  const [searchParams] = useSearchParams();
+  const keyword = searchParams.get(LIST_SEARCH_PARAM_KEY) || "";
+
+  //搜索时重新加载
+  useEffect(() => {
+    setStarted(false);
+    setList([]);
+    setPage(0);
+    setTotal(0);
+  }, [keyword]);
+
+  //触发加载更多
+  const { loading, run: load } = useRequest(
+    async () => {
+      const data = await getQuestionListService({
+        page,
+        pageSize: LIST_PAGE_SIZE,
+        keyword,
+      });
+      return data;
     },
     {
-      _id: "q2",
-      title: "问卷2",
-      isPublished: true,
-      isStar: true,
-      answerCount: 5,
-      createAt: "3月2日 13：32",
+      manual: true,
+      onSuccess(result) {
+        console.log(result);
+
+        const { list: l = [], total = 0 } = result;
+        setList(list.concat(l));
+        setTotal(total);
+        setPage(page + 1);
+      },
+    }
+  );
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { run: tryLoadMore } = useDebounceFn(
+    () => {
+      const elem = containerRef.current;
+      if (elem == null) return;
+      const domRect = elem.getBoundingClientRect();
+      if (domRect == null) return;
+      const { bottom } = domRect;
+      if (bottom <= document.body.clientHeight) {
+        load();
+        setStarted(true);
+      }
     },
     {
-      _id: "q3",
-      title: "问卷3",
-      isPublished: false,
-      isStar: false,
-      answerCount: 5,
-      createAt: "3月2日 13：32",
-    },
-    {
-      _id: "q4",
-      title: "问卷4",
-      isPublished: true,
-      isStar: false,
-      answerCount: 5,
-      createAt: "3月2日 13：32",
-    },
-  ]);
+      wait: 1000,
+    }
+  );
+
+  //页面加载或者url参数变化
+  useEffect(() => {
+    tryLoadMore();
+  }, [searchParams]);
+
+  //页面滚动时
+  useEffect(() => {
+    if (haveMoreData) {
+      window.addEventListener("scroll", tryLoadMore);
+    }
+    return () => {
+      window.removeEventListener("scroll", tryLoadMore);
+    };
+  }, [searchParams, haveMoreData]);
+
+  const loadMoreContentElem = () => {
+    if (!started || loading) {
+      return <Spin />;
+    }
+    if (total == 0) {
+      return <Empty description="暂无数据" />;
+    }
+    if (!haveMoreData) {
+      return <span>没有更多了</span>;
+    }
+    return <span>开始加载下一页</span>;
+  };
 
   return (
     <>
@@ -54,14 +112,15 @@ const List = () => {
         </div>
       </div>
       <div className={styles.content}>
-        {questionList.length === 0 && <Empty description="暂无数据" />}
-        {questionList.length > 0 &&
-          questionList.map((q) => {
+        {list.length > 0 &&
+          list.map((q: any) => {
             const { _id } = q;
             return <QuestionCard key={_id} {...q}></QuestionCard>;
           })}
       </div>
-      <div className={styles.footer}>上划 加载更多</div>
+      <div className={styles.footer}>
+        <div ref={containerRef}>{loadMoreContentElem()}</div>
+      </div>
     </>
   );
 };
