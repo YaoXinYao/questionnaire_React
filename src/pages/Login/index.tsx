@@ -1,13 +1,17 @@
 import { UserAddOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, Space } from "antd";
+import { useRequest } from "ahooks";
+import { Button, Checkbox, Form, Input, message, Space } from "antd";
 import { useForm } from "antd/es/form/Form";
 import Title from "antd/es/typography/Title";
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginService } from "../../services/user";
+import { setToken } from "../../utils/user-token";
 
 import styles from "./index.module.scss";
 
 const Login = () => {
+  const nav = useNavigate();
   const [form] = useForm();
 
   useEffect(() => {
@@ -35,6 +39,23 @@ const Login = () => {
     };
   }
 
+  const { run: login } = useRequest(
+    async (values) => {
+      const { username, password } = values;
+      const data = await loginService(username, password);
+      return data;
+    },
+    {
+      manual: true,
+      onSuccess(result) {
+        console.log(result);
+        setToken(result.data.token);
+        message.success("登录成功");
+        nav("/manage/list");
+      },
+    }
+  );
+
   let onFinish = (value: any) => {
     const { password, username, remember } = value;
     if (remember) {
@@ -42,6 +63,7 @@ const Login = () => {
     } else {
       deleteUserFromStorage();
     }
+    login(value);
   };
 
   return (

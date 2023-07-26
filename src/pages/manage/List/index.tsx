@@ -1,16 +1,12 @@
 import { useDebounceFn, useRequest, useTitle } from "ahooks";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import QuestionCard from "../../../components/QuestionCard/QuestionCard";
 import styles from "./index.module.scss";
 import { Empty, Spin, Typography } from "antd";
 import ListSearch from "../../../components/ListSearch";
 import { useSearchParams } from "react-router-dom";
 import { getQuestionListService } from "../../../services/question";
-import {
-  LIST_PAGE_SIZE,
-  LIST_PAGE_SIZE_PARAM_KEY,
-  LIST_SEARCH_PARAM_KEY,
-} from "../../../constant";
+import { LIST_PAGE_SIZE, LIST_SEARCH_PARAM_KEY } from "../../../constant";
 const { Title } = Typography;
 
 const List = () => {
@@ -46,9 +42,7 @@ const List = () => {
     {
       manual: true,
       onSuccess(result) {
-        console.log(result);
-
-        const { list: l = [], total = 0 } = result;
+        const { list: l = [], total = 0 } = result.data;
         setList(list.concat(l));
         setTotal(total);
         setPage(page + 1);
@@ -88,7 +82,7 @@ const List = () => {
     };
   }, [searchParams, haveMoreData]);
 
-  const loadMoreContentElem = () => {
+  const loadMoreContentElem = useMemo(() => {
     if (!started || loading) {
       return <Spin />;
     }
@@ -99,7 +93,7 @@ const List = () => {
       return <span>没有更多了</span>;
     }
     return <span>开始加载下一页</span>;
-  };
+  }, [started, loading, total, haveMoreData]);
 
   return (
     <>
@@ -119,7 +113,7 @@ const List = () => {
           })}
       </div>
       <div className={styles.footer}>
-        <div ref={containerRef}>{loadMoreContentElem()}</div>
+        <div ref={containerRef}>{loadMoreContentElem}</div>
       </div>
     </>
   );

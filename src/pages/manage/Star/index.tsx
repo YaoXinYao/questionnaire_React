@@ -15,7 +15,8 @@ const Star = () => {
     error,
     data = {},
   } = useLoadQuestionListData({ isStar: true });
-  const { list = {}, total = 0 } = data;
+  const {data:res={}}=data
+  const { list = {}, total = 0 } = res;
   return (
     <>
       <div className={styles.header}>

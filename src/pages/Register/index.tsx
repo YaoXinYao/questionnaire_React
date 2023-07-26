@@ -1,15 +1,36 @@
 import React from "react";
-import { Space, Typography, Input, Form, Button } from "antd";
+import { Space, Typography, Input, Form, Button, message } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import styles from "./index.module.scss";
+import { useRequest } from "ahooks";
+import { registerService } from "../../services/user";
 
 const { Title } = Typography;
 
 const Register = () => {
+  const nav = useNavigate();
+  const { loading: regiserLoading, run: regiser } = useRequest(
+    async (values) => {
+      const { username, password } = values;
+      const data = await registerService(username, password);
+      return data;
+    },
+    {
+      manual: true,
+      onSuccess(result) {
+        console.log(result);
+        message.success("注册成功");
+        nav("/login");
+      },
+    }
+  );
+
   let onFinish = (value: any) => {
     console.log(value);
+
+    regiser(value);
   };
 
   return (
@@ -78,9 +99,6 @@ const Register = () => {
             ]}
           >
             <Input.Password />
-          </Form.Item>
-          <Form.Item label="昵称" name="nickname">
-            <Input />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
             <Space>

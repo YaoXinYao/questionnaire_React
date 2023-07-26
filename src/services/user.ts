@@ -1,0 +1,31 @@
+import axios, { ResDataType } from "./ajax";
+
+//获取用户信息
+export async function getUserInfoService(): Promise<ResDataType> {
+  const url = "/api/user/getUserInfo";
+  const data = (await axios.get(url)) as ResDataType;
+  return data;
+}
+
+//注册
+export async function registerService(
+  username: string,
+  password: string
+): Promise<ResDataType> {
+  const url = "/api/user/register";
+  const body = { username, password };
+  const data = (await axios.post(url, body)) as ResDataType;
+  return data;
+}
+
+//登录
+export async function loginService(
+  username: string,
+  password: string
+): Promise<ResDataType> {
+  const url = "/api/user/login";
+  const body = { username, password };
+  const data = (await axios.post(url, body)) as ResDataType;
+  console.log("data", data);
+  return data;
+}

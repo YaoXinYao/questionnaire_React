@@ -6,9 +6,14 @@ import {
   LineChartOutlined,
   StarOutlined,
 } from "@ant-design/icons";
+import { useRequest } from "ahooks";
 import { Button, Divider, Popconfirm, Space, Tag, Modal, message } from "antd";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  copyQuestionService,
+  updateQuestionService,
+} from "../../services/question";
 import styles from "./QuestionCard.module.scss";
 
 type PropsType = {
@@ -24,18 +29,65 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
   const { confirm } = Modal;
   const { _id, title, createAt, answerCount, isPublished, isStar } = props;
 
-  function duplicate() {
-    message.success("复制成功");
-  }
+  const [isStarState, setIsStarState] = useState(isStar);
 
-  function del() {
+  //更新
+  const { loading: changeStarLoading, run: changeStar } = useRequest(
+    async () => {
+      const data = await updateQuestionService(_id, { isStar: !isStarState });
+      return data;
+    },
+    {
+      manual: true,
+      onSuccess(result) {
+        setIsStarState(!isStarState);
+        message.success("已更新");
+      },
+    }
+  );
+
+  // function duplicate() {
+  //   message.success("复制成功");
+  // }
+
+  //复制
+  const { loading: copyLoading, run: copy } = useRequest(
+    async () => {
+      const data = await copyQuestionService(_id);
+      return data;
+    },
+    {
+      manual: true,
+      onSuccess(result) {
+        message.success("复制成功");
+        nav(`/question/edit/${result.data.id}`);
+      },
+    }
+  );
+
+  //删除
+  const [isDeletedState, setIsDeleteState] = useState(false);
+  const { loading: deleteLoading, run: deleteQuestion } = useRequest(
+    async () => await updateQuestionService(_id, { isDeleted: true }),
+    {
+      manual: true,
+      onSuccess() {
+        message.success("删除成功");
+        setIsDeleteState(true);
+      },
+    }
+  );
+
+  function delFn() {
     confirm({
       title: "确定删除该问卷吗？",
       icon: <ExclamationCircleOutlined />,
-      onOk: () => {
-        message.success("删除成功");
-      },
+      onOk: deleteQuestion,
     });
+  }
+
+  if (isDeletedState) {
+    return null;
   }
 
   return (
@@ -86,14 +138,21 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
         </div>
         <div className={styles.right}>
           <Space>
-            <Button type="text" icon={<StarOutlined />} size="small">
-              {isStar ? "取消标星" : "标星"}
+            <Button
+              type="text"
+              icon={<StarOutlined />}
+              size="small"
+              onClick={changeStar}
+              disabled={changeStarLoading}
+            >
+              {isStarState ? "取消标星" : "标星"}
             </Button>
             <Popconfirm
               title="确定复制该问卷吗？"
               okText="确定"
               cancelText="取消"
-              onConfirm={duplicate}
+              onConfirm={copy}
+              disabled={copyLoading}
             >
               <Button type="text" icon={<CopyOutlined />} size="small">
                 复制
@@ -103,7 +162,8 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
               type="text"
               icon={<DeleteOutlined />}
               size="small"
-              onClick={del}
+              onClick={delFn}
+              disabled={deleteLoading}
             >
               删除
             </Button>

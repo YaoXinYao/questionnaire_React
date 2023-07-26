@@ -1,9 +1,21 @@
 import { message } from "antd";
 import axios from "axios";
+import { getToken } from "../utils/user-token";
 
 const instance = axios.create({
   timeout: 5 * 1000,
 });
+
+//request拦截：每次请求都带上token
+instance.interceptors.request.use(
+  (config) => {
+    config.headers["Authorization"] = `Bearer ${getToken()}`;
+    return config;
+  },
+  (error) => {
+    Promise.reject(error);
+  }
+);
 
 //response拦截器：统一拦截error和msg
 instance.interceptors.response.use((res) => {
@@ -16,7 +28,8 @@ instance.interceptors.response.use((res) => {
 
     throw new Error(msg);
   }
-  return data as any;
+  console.log("resData", resData);
+  return resData as any;
 });
 
 export default instance;
