@@ -14,7 +14,7 @@ const UserInfo = () => {
 
   function logout() {
     removeToken();
-    message.success("退出成功");
+    message.success("退出成功！");
     nav("/login");
   }
 
