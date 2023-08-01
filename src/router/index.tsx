@@ -72,3 +72,13 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
+
+export function isLoginOrRegister(pathname: string) {
+  if (["/login", "/register"].includes(pathname)) return true;
+  return false;
+}
+
+export function isNoNeedUserInfo(pathname: string) {
+  if (["/login", "/register", "/"].includes(pathname)) return true;
+  return false;
+}

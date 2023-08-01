@@ -1,19 +1,12 @@
-import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Typography } from "antd";
 const { Title, Paragraph } = Typography;
 import styles from "./index.module.scss";
-import axios from "axios";
 import "../../_mock/index";
 
 const Home = () => {
   const nav = useNavigate();
-
-  useEffect(() => {
-    axios.get("/api/test").then((res) => {
-      console.log(res);
-    });
-  }, []);
 
   return (
     <div className={styles.container}>

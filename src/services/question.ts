@@ -11,6 +11,7 @@ type SearchOption = {
 export async function getQuestionService(id: string): Promise<ResDataType> {
   const url = `/api/question/${id}`;
   const data = (await axios.get(url)) as ResDataType;
+
   return data;
 }
 
@@ -52,6 +53,6 @@ export async function deleteQuestionService(
   ids: string[]
 ): Promise<ResDataType> {
   const url = `/api/deleteQuestions`;
-  const data = (await axios.delete(url, {data:{ ids }})) as ResDataType;
+  const data = (await axios.delete(url, { data: { ids } })) as ResDataType;
   return data;
 }

@@ -1,18 +1,21 @@
 import { UserOutlined } from "@ant-design/icons";
-import { useRequest } from "ahooks";
 import { Button, message } from "antd";
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { getUserInfoService } from "../../services/user";
+import useGetUserInfo from "../../hooks/useGetUserInfo";
+import { logoutReducer } from "../../store/userReducer";
 import { removeToken } from "../../utils/user-token";
 
 const UserInfo = () => {
   const nav = useNavigate();
-  const { data = {} } = useRequest(getUserInfoService);
-  const { data: res = {} } = data;
-  const { username } = res || {};
-
+  const dispatch = useDispatch();
+  // const { data = {} } = useRequest(getUserInfoService);
+  // const { data: res = {} } = data;
+  // const { username } = res || {};
+  const { username } = useGetUserInfo();
   function logout() {
+    dispatch(logoutReducer);
     removeToken();
     message.success("退出成功！");
     nav("/login");

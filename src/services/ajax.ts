@@ -28,7 +28,6 @@ instance.interceptors.response.use((res) => {
 
     throw new Error(msg);
   }
-  console.log("resData", resData);
   return resData as any;
 });
 

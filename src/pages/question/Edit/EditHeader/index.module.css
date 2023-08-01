@@ -1,0 +1,24 @@
+.header-wrapper {
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 12px 0;
+}
+
+.header {
+  display: flex;
+  margin: 0 24px;
+}
+
+.header .left {
+  flex: 1;
+}
+
+.header .main {
+  flex: 1;
+  text-align: center;
+}
+
+.header .right {
+  flex: 1;
+  text-align: center;
+}
