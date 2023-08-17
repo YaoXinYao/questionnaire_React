@@ -1,17 +1,36 @@
 import { Spin } from "antd";
-import React, { FC } from "react";
-import QuestionInput from "../../../../components/QuestionComponents/QuestionInput/Component";
-import QuestionTitle from "../../../../components/QuestionComponents/QuestionTitle/Component";
+import classNames from "classnames";
+import React, { FC, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getComponentConfByType } from "../../../../components/QuestionComponents";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
+import {
+  changeSelectedId,
+  ComponentInfoType,
+} from "../../../../store/componentsReducer";
 import styles from "./index.module.scss";
 
 type PropsType = {
   loading: boolean;
 };
 
+function getComponent(componentInfo: ComponentInfoType) {
+  const { type, props } = componentInfo;
+
+  const componentConf = getComponentConfByType(type);
+  if (componentConf == null) return null;
+  const { Component } = componentConf;
+  return <Component {...props} />;
+}
+
 const EditCanvas: FC<PropsType> = ({ loading }) => {
-  const res = useGetComponentInfo();
-  console.log(loading);
+  const { componentList, selectedId } = useGetComponentInfo();
+  const dispatch = useDispatch();
+
+  function handleClick(event: React.MouseEvent, id: string) {
+    event.stopPropagation();
+    dispatch(changeSelectedId(id));
+  }
 
   if (loading) {
     return (
@@ -22,7 +41,29 @@ const EditCanvas: FC<PropsType> = ({ loading }) => {
   }
   return (
     <div className={styles.canvas}>
-      <div className={styles["component-wrapper"]}>
+      {componentList
+        .filter((c) => !c.isHidden)
+        .map((item) => {
+          const { id, isLocked } = item;
+          const defaultClassName = styles["component-wrapper"];
+          const selectedClassName = styles.selected;
+          const lockedCladdName = styles.locked;
+          const isSelectedClassName = classNames({
+            [defaultClassName]: true,
+            [selectedClassName]: id === selectedId,
+            [lockedCladdName]: isLocked,
+          });
+          return (
+            <div
+              key={id}
+              className={isSelectedClassName}
+              onClick={(e) => handleClick(e, id)}
+            >
+              <div className={styles.component}>{getComponent(item)}</div>
+            </div>
+          );
+        })}
+      {/* <div className={styles["component-wrapper"]}>
         <div className={styles.component}>
           <QuestionTitle />
         </div>
@@ -31,7 +72,7 @@ const EditCanvas: FC<PropsType> = ({ loading }) => {
         <div className={styles.component}>
           <QuestionInput />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -8,6 +8,12 @@
   display: flex;
   margin: 0 24px;
 
+  h1 {
+    font-size: 18px;
+    margin-bottom: 0;
+    line-height: 1;
+  }
+
   .left {
     flex: 1;
   }
