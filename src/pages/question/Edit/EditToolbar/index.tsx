@@ -1,4 +1,6 @@
 import {
+  BlockOutlined,
+  CopyOutlined,
   DeleteOutlined,
   EyeInvisibleOutlined,
   LockOutlined,
@@ -8,15 +10,17 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import {
   changeComponentHidden,
+  copySelectedComponent,
   lockComponent,
+  pasteCopiedComponent,
   removeSelectedComponent,
 } from "../../../../store/componentsReducer";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
 
 const EditToolbar = () => {
   const dispatch = useDispatch();
-  const { selectedId, selectedComponent } = useGetComponentInfo();
-  console.log(selectedComponent);
+  const { selectedId, selectedComponent, copiedComponent } =
+    useGetComponentInfo();
 
   const { isLocked } = selectedComponent || {};
 
@@ -33,6 +37,16 @@ const EditToolbar = () => {
   //锁定组件
   function handleLock() {
     dispatch(lockComponent({ id: selectedId }));
+  }
+
+  //复制组件
+  function copy() {
+    dispatch(copySelectedComponent());
+  }
+
+  //粘贴组件
+  function paste() {
+    dispatch(pasteCopiedComponent());
   }
 
   return (
@@ -57,6 +71,17 @@ const EditToolbar = () => {
           icon={<LockOutlined />}
           onClick={handleLock}
           type={isLocked ? "primary" : "default"}
+        ></Button>
+      </Tooltip>
+      <Tooltip title="复制">
+        <Button shape="circle" icon={<CopyOutlined />} onClick={copy}></Button>
+      </Tooltip>
+      <Tooltip title="粘贴">
+        <Button
+          shape="circle"
+          icon={<BlockOutlined />}
+          onClick={paste}
+          disabled={copiedComponent == null}
         ></Button>
       </Tooltip>
     </Space>

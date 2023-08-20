@@ -1,3 +1,6 @@
+/**
+ * 问卷的标题组件
+ */
 import Component from "./Component";
 import { QuestionTitleDefaultProps } from "./interface";
 export * from "./interface";

@@ -9,6 +9,7 @@ import {
   ComponentInfoType,
 } from "../../../../store/componentsReducer";
 import styles from "./index.module.scss";
+import useBindCanvasKeyPress from "../../../../hooks/useBindCanvasKeyPress";
 
 type PropsType = {
   loading: boolean;
@@ -26,6 +27,9 @@ function getComponent(componentInfo: ComponentInfoType) {
 const EditCanvas: FC<PropsType> = ({ loading }) => {
   const { componentList, selectedId } = useGetComponentInfo();
   const dispatch = useDispatch();
+
+  //绑定快捷键
+  useBindCanvasKeyPress()
 
   function handleClick(event: React.MouseEvent, id: string) {
     event.stopPropagation();

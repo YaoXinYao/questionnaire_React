@@ -1,4 +1,4 @@
-import { ComponentInfoType } from ".";
+import { ComponentInfoType, ComponentsStateType } from ".";
 
 export function getNextSelectedId(
   id: string,
@@ -25,4 +25,22 @@ export function getNextSelectedId(
     }
     return newSelectedId;
   }
+}
+
+
+//插入新组件
+export function insertNewComponent(state:ComponentsStateType,newComponent:ComponentInfoType ){
+  const { selectedId, componentList } = state;
+  const index = componentList.findIndex((c) => c.id === selectedId);
+
+  if (index < 0) {
+    state.componentList = [...componentList, newComponent];
+  } else {
+    state.componentList = [
+      ...componentList.slice(0, index + 1),
+      newComponent,
+      ...componentList.slice(index + 1),
+    ];
+  }
+  state.selectedId = newComponent.id;
 }
