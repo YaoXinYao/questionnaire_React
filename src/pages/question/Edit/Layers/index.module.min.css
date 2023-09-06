@@ -1,0 +1,1 @@
+.title{background-color:aliceblue}.selected{color:#1677ff}.wrapper{display:flex;justify-content:space-between;margin-bottom:12px;cursor:pointer;background-color:aliceblue;border:1px solid #fff;padding:12px;border-radius:3px}.wrapper:hover{border-color:#999}.handler{width:50px;text-align:end}.handler .btn{opacity:0.2}.handler:hover .btn{opacity:1}

@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px - 100px);
+  height: calc(100vh - 68px - 100px);
   background-color: #f0f2f5;
 }
 
@@ -14,6 +14,7 @@
   flex: 1;
   padding: 12px 0;
   box-sizing: border-box;
+  height: 100%;
 }
 
 .content {
@@ -27,6 +28,9 @@
     background-color: #fff;
     padding: 0 12px;
     box-sizing: border-box;
+    width: 320px;
+    height: 100%;
+    overflow: auto;
   }
 
   .main {
@@ -47,5 +51,7 @@
     background-color: #fff;
     padding: 0 12px;
     box-sizing: border-box;
+    height: 100%;
+    overflow: auto;
   }
 }
