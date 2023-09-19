@@ -15,7 +15,7 @@ const RightPanel = () => {
   const { selectedId } = useGetComponentInfo();
   useEffect(() => {
     if (selectedId) setActiveKey(TAB_KEY.PROP_KEY);
-    else setActiveKey(TAB_KEY.PROP_KEY);
+    else setActiveKey(TAB_KEY.SETTING_KEY);
   }, [selectedId]);
   const tabsItems = [
     {
@@ -29,7 +29,7 @@ const RightPanel = () => {
       children: <ComponentProp />,
     },
     {
-      key: TAB_KEY.PROP_KEY,
+      key: TAB_KEY.SETTING_KEY,
       label: (
         <span>
           <SettingOutlined />

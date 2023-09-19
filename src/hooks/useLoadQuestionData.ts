@@ -6,6 +6,7 @@ import { getQuestionService } from "../services/question";
 import { StateType } from "../store";
 import { resetComponents } from "../store/componentsReducer";
 import { getQuestionId, idStateType } from "../store/questionIdReducer";
+import { resetPageInfo } from "../store/pageInfoReducer";
 
 function useLoadQuestionData() {
   const { id = "" } = useParams();
@@ -41,14 +42,23 @@ function useLoadQuestionData() {
     if (!data) {
       return;
     }
-    const { title = "", componentList = [] } = data;
+    const {
+      title = "",
+      desc = "",
+      js = "",
+      css = "",
+      componentList = [],
+    } = data;
 
     let selectedId = "";
     if (componentList.length > 0) {
       selectedId = componentList[0].id;
     }
 
-    dispatch(resetComponents({ componentList, selectedId }));
+    dispatch(
+      resetComponents({ componentList, selectedId, copiedComponent: null })
+    );
+    dispatch(resetPageInfo({ title, desc, css, js }));
   }, [data, id]);
 
   //   const [loading, setLoading] = useState(true);

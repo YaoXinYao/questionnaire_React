@@ -7,9 +7,12 @@ import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
 import {
   changeSelectedId,
   ComponentInfoType,
+  moveComponent,
 } from "../../../../store/componentsReducer";
 import styles from "./index.module.scss";
 import useBindCanvasKeyPress from "../../../../hooks/useBindCanvasKeyPress";
+import SortableContainer from "../../../../components/DragSortable/SortableContainer";
+import SortableItem from "../../../../components/DragSortable/SortableItem";
 
 type PropsType = {
   loading: boolean;
@@ -29,7 +32,7 @@ const EditCanvas: FC<PropsType> = ({ loading }) => {
   const dispatch = useDispatch();
 
   //绑定快捷键
-  useBindCanvasKeyPress()
+  useBindCanvasKeyPress();
 
   function handleClick(event: React.MouseEvent, id: string) {
     event.stopPropagation();
@@ -43,31 +46,38 @@ const EditCanvas: FC<PropsType> = ({ loading }) => {
       </div>
     );
   }
+
+  function handleDragEnd(oldIndex: number, newIndex: number) {
+    dispatch(moveComponent({ oldIndex, newIndex }));
+  }
+
   return (
-    <div className={styles.canvas}>
-      {componentList
-        .filter((c) => !c.isHidden)
-        .map((item) => {
-          const { id, isLocked } = item;
-          const defaultClassName = styles["component-wrapper"];
-          const selectedClassName = styles.selected;
-          const lockedCladdName = styles.locked;
-          const isSelectedClassName = classNames({
-            [defaultClassName]: true,
-            [selectedClassName]: id === selectedId,
-            [lockedCladdName]: isLocked,
-          });
-          return (
-            <div
-              key={id}
-              className={isSelectedClassName}
-              onClick={(e) => handleClick(e, id)}
-            >
-              <div className={styles.component}>{getComponent(item)}</div>
-            </div>
-          );
-        })}
-      {/* <div className={styles["component-wrapper"]}>
+    <SortableContainer items={componentList} onDragEnd={handleDragEnd}>
+      <div className={styles.canvas}>
+        {componentList
+          .filter((c) => !c.isHidden)
+          .map((item) => {
+            const { id, isLocked } = item;
+            const defaultClassName = styles["component-wrapper"];
+            const selectedClassName = styles.selected;
+            const lockedCladdName = styles.locked;
+            const isSelectedClassName = classNames({
+              [defaultClassName]: true,
+              [selectedClassName]: id === selectedId,
+              [lockedCladdName]: isLocked,
+            });
+            return (
+              <SortableItem key={id} id={id}>
+                <div
+                  className={isSelectedClassName}
+                  onClick={(e) => handleClick(e, id)}
+                >
+                  <div className={styles.component}>{getComponent(item)}</div>
+                </div>
+              </SortableItem>
+            );
+          })}
+        {/* <div className={styles["component-wrapper"]}>
         <div className={styles.component}>
           <QuestionTitle />
         </div>
@@ -77,7 +87,8 @@ const EditCanvas: FC<PropsType> = ({ loading }) => {
           <QuestionInput />
         </div>
       </div> */}
-    </div>
+      </div>
+    </SortableContainer>
   );
 };
 
