@@ -29,12 +29,13 @@ function getComponent(componentInfo: ComponentInfoType) {
 
 const EditCanvas: FC<PropsType> = ({ loading }) => {
   const { componentList, selectedId } = useGetComponentInfo();
+
   const dispatch = useDispatch();
 
   //绑定快捷键
   useBindCanvasKeyPress();
 
-  function handleClick(event: React.MouseEvent, id: string) {
+  function handleClick(event: React.MouseEvent, id: number) {
     event.stopPropagation();
     dispatch(changeSelectedId(id));
   }
@@ -57,7 +58,7 @@ const EditCanvas: FC<PropsType> = ({ loading }) => {
         {componentList
           .filter((c) => !c.isHidden)
           .map((item) => {
-            const { id, isLocked } = item;
+            const { id = -1, isLocked } = item;
             const defaultClassName = styles["component-wrapper"];
             const selectedClassName = styles.selected;
             const lockedCladdName = styles.locked;

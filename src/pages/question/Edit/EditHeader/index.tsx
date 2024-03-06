@@ -6,25 +6,119 @@ import styles from "./index.module.scss";
 import Title from "antd/es/typography/Title";
 import EditToolbar from "../EditToolbar";
 import useGetPageInfo from "../../../../hooks/useGetPageInfo";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { changePageTitle } from "../../../../store/pageInfoReducer";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
 import { useDebounceEffect, useKeyPress, useRequest } from "ahooks";
-import { updateQuestionService } from "../../../../services/question";
-
+import {
+  addQuestionItemService,
+  deleteQuestionItemService,
+  updateQuestionItemIndexService,
+  updateQuestionItemService,
+  updateQuestionService,
+} from "../../../../services/question";
+import {
+  clearAddComponentIds,
+  clearDeleteComponentIds,
+} from "../../../../store/componentsReducer";
+("");
 const EditHeader = () => {
   const nav = useNavigate();
   const { title } = useGetPageInfo();
   const dispatch = useDispatch();
   const [editState, setEditState] = useState(false);
-  const { componentList = [] } = useGetComponentInfo();
+  const {
+    componentList = [],
+    addComponentIdsArr,
+    deleteComponentIdsArr,
+  } = useGetComponentInfo();
   const pageInfo = useGetPageInfo();
-  const { id } = useParams();
+  const { id: paramsId } = useParams();
+  let id: number = -1;
+  if (paramsId) {
+    id = parseInt(paramsId);
+  }
+
+  async function saveCompnentInfo(): Promise<boolean> {
+    let indexArr = [];
+    let addArr = [];
+    let updateArr = [];
+    for (let i = 0; i < componentList.length; i++) {
+      let { id, ...props } = componentList[i];
+      if (addComponentIdsArr.indexOf(id) >= 0) {
+        addArr.push({
+          ...props,
+          props: JSON.stringify(props.props),
+          indexId: i,
+        });
+      } else {
+        updateArr.push({
+          ...componentList[i],
+          props: JSON.stringify(props.props),
+        });
+      }
+      indexArr[i] = id;
+    }
+    let flag: boolean = true;
+    if (deleteComponentIdsArr.length) {
+      let res = await deleteQuestionItemService(deleteComponentIdsArr);
+      if (res.code == 0) {
+        dispatch(clearDeleteComponentIds());
+      } else {
+        flag = false;
+      }
+    }
+
+    if (updateArr.length) {
+      let res = await updateQuestionItemService(updateArr);
+      if (res.code == 0) {
+        dispatch(clearDeleteComponentIds());
+        updateArr = [];
+      } else {
+        flag = false;
+      }
+    }
+
+    if (addArr.length) {
+      let res = await addQuestionItemService(addArr);
+      if (res.code == 0) {
+        dispatch(clearAddComponentIds());
+        addArr = [];
+      } else {
+        flag = false;
+      }
+    }
+
+    if (indexArr.length) {
+      let res = await updateQuestionItemIndexService(indexArr);
+      if (res.code == 0) {
+        indexArr = [];
+      } else {
+        flag = false;
+      }
+    }
+    return flag;
+  }
 
   const { loading: saveLoading, run: save } = useRequest(
     async () => {
       if (!id) return;
-      await updateQuestionService(id, { ...pageInfo, componentList });
+
+      let questionnaireRes = await updateQuestionService({
+        id,
+        ...pageInfo,
+        isPublished: 0,
+      });
+      let questionRes = await saveCompnentInfo();
+      if (questionRes && questionnaireRes.code == 0) {
+        message.success("保存成功");
+      } else if (!questionRes && questionnaireRes.code == -1) {
+        message.error("问卷保存失败");
+      } else if (!questionRes) {
+        message.error("问卷问题保存失败");
+      } else if (questionnaireRes.code == -1) {
+        message.error("问卷信息保存失败");
+      }
     },
     { manual: true }
   );
@@ -36,31 +130,38 @@ const EditHeader = () => {
   });
 
   //自动保存
-  useDebounceEffect(
-    () => {
-      save();
-    },
-    [componentList, pageInfo],
-    {
-      wait: 1000,
-    }
-  );
+  // useDebounceEffect(
+  //   () => {
+  //     console.log(componentList);
+  //   },
+  //   [componentList, pageInfo],
+  //   {
+  //     wait: 1000,
+  //   }
+  // );
 
   const { loading: pubLoading, run: pub } = useRequest(
     async () => {
       if (!id) return;
-      await updateQuestionService(id, {
+      let questionnaireRes = await updateQuestionService({
+        id,
         ...pageInfo,
-        componentList,
-        isPublished: true,
+        isPublished: 1,
       });
+      let questionRes = await saveCompnentInfo();
+      if (questionRes && questionnaireRes.code == 0) {
+        message.success("保存成功");
+        nav("/manage/list");
+      } else if (!questionRes && questionnaireRes.code == -1) {
+        message.error("问卷保存失败");
+      } else if (!questionRes) {
+        message.error("问卷问题保存失败");
+      } else if (questionnaireRes.code == -1) {
+        message.error("问卷信息保存失败");
+      }
     },
     {
       manual: true,
-      onSuccess() {
-        message.success("发布成功");
-        nav("/question/stat/" + id);
-      },
     }
   );
 

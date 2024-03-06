@@ -16,20 +16,22 @@ const ComponentProp = () => {
     return noProps;
   }
 
-  const { type, props,isLocked } = selectedComponent;
+  const { type, props, isLocked } = selectedComponent;
   const componentConf = getComponentConfByType(type);
   if (componentConf == null) {
     return noProps;
   }
 
-  function changeProps(newProps: ComponentPropsType) {
+  async function changeProps(newProps: ComponentPropsType) {
     if (selectedComponent == null) return;
     const { id } = selectedComponent;
     dispatch(changeComponentProps({ id, newProps }));
   }
 
   const { PropComponent } = componentConf;
-  return <PropComponent {...props} onChange={changeProps} disabled={isLocked}/>;
+  return (
+    <PropComponent {...props} onChange={changeProps} disabled={isLocked == 1} />
+  );
 };
 
 export default ComponentProp;

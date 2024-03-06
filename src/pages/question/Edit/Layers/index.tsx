@@ -20,9 +20,9 @@ const Layers = () => {
 
   const dispatch = useDispatch();
 
-  const [changingTitleId, setChangingTitleId] = useState("");
+  const [changingTitleId, setChangingTitleId] = useState(-1);
 
-  function handleTitleClick(id: string) {
+  function handleTitleClick(id: number) {
     const curComp = componentList.find((c) => c.id === id);
     if (curComp && curComp.isHidden) {
       message.info("不能选中隐藏组件");
@@ -31,7 +31,7 @@ const Layers = () => {
 
     if (id !== selectedId) {
       dispatch(changeSelectedId(id));
-      setChangingTitleId("");
+      setChangingTitleId(-1);
       return;
     }
 
@@ -47,12 +47,12 @@ const Layers = () => {
   }
 
   //切换隐藏与显示
-  function changeHidden(id: string, isHidden: boolean) {
+  function changeHidden(id: number, isHidden: number) {
     dispatch(changeComponentHidden({ id, isHidden }));
   }
 
   //切换锁定与解锁
-  function changeLocked(id: string) {
+  function changeLocked(id: number) {
     dispatch(lockComponent({ id }));
   }
   function handleDragEnd(oldIndex: number, newIndex: number) {
@@ -82,8 +82,8 @@ const Layers = () => {
                   <Input
                     value={title}
                     onChange={changeTitle}
-                    onPressEnter={() => setChangingTitleId("")}
-                    onBlur={() => setChangingTitleId("")}
+                    onPressEnter={() => setChangingTitleId(-1)}
+                    onBlur={() => setChangingTitleId(-1)}
                   />
                 )}
                 {id !== changingTitleId && title}
@@ -96,7 +96,7 @@ const Layers = () => {
                     className={!isHidden ? styles.btn : ""}
                     icon={<EyeInvisibleOutlined />}
                     type={isHidden ? "primary" : "text"}
-                    onClick={() => changeHidden(id, !isHidden)}
+                    onClick={() => changeHidden(id, isHidden == 0 ? 1 : 0)}
                   />
 
                   <Button

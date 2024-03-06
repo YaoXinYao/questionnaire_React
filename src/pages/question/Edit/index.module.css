@@ -1,7 +1,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 68px - 100px);
+  height: 100vh;
+  overflow: auto;
   background-color: #f0f2f5;
 }
 
@@ -13,8 +14,8 @@
 .content-wrapper {
   flex: 1;
   padding: 12px 0;
+  height: calc(100vh - 50px);
   box-sizing: border-box;
-  height: 100%;
 }
 
 .content {

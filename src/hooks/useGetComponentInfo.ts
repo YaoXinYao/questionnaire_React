@@ -7,7 +7,14 @@ function useGetComponentInfo() {
     (state) => state.components.present
   ) as ComponentsStateType;
 
-  const { componentList = [], selectedId, copiedComponent } = components;
+  const {
+    componentList = [],
+    selectedId,
+    copiedComponent,
+    addComponentIdsArr,
+    deleteComponentIdsArr,
+  } = components;
+
   const selectedComponent = componentList.find((c) => c.id === selectedId);
 
   return {
@@ -15,6 +22,8 @@ function useGetComponentInfo() {
     selectedId,
     selectedComponent,
     copiedComponent,
+    addComponentIdsArr,
+    deleteComponentIdsArr,
   };
 }
 

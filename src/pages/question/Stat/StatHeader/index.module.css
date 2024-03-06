@@ -1,0 +1,30 @@
+.headerWrapper {
+  background-color: #fff;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.header {
+  display: flex;
+  height: 50px;
+  align-items: center;
+  margin: 0 24px;
+}
+
+.header .left {
+  flex: 1;
+}
+
+.header .left h1 {
+  font-size: 18px;
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+.header .right {
+  flex: 1;
+}
+
+.header .main {
+  flex: 1;
+  text-align: center;
+}

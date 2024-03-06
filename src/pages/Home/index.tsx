@@ -11,13 +11,13 @@ const Home = () => {
   return (
     <div className={styles.container}>
       <div className={styles.info}>
-        <Title>问卷调查|在线投票</Title>
+        <Title>乐答问卷</Title>
         <Paragraph>
-          已累计创建问卷10000份，发布问卷9000份，收到答卷1000000份
+          我们尊重你的每一次选择！
         </Paragraph>
         <div>
           <Button type="primary" onClick={() => nav("/manage/list")}>
-            开始使用
+            登录
           </Button>
         </div>
       </div>

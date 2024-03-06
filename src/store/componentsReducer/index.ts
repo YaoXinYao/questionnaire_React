@@ -3,26 +3,44 @@ import { ComponentPropsType } from "../../components/QuestionComponents";
 import cloneDeep from "lodash.clonedeep";
 import { getNextSelectedId, insertNewComponent } from "./utils";
 import { arrayMove } from "@dnd-kit/sortable";
+import { useUpdateComponentIndex } from "../../hooks/useUpdateComponentIndex";
 
 export type ComponentInfoType = {
-  id: string;
+  id: number;
+  indexId: number;
   type: string;
   title: string;
-  isHidden?: boolean;
-  isLocked?: boolean;
+  isHidden: number;
+  isLocked: number;
   props: ComponentPropsType;
+  qId: number;
+  create_time: string;
+};
+export type AddComponentInfoType = {
+  indexId: number;
+  type: string;
+  title: string;
+  isHidden: number;
+  isLocked: number;
+  props: ComponentPropsType;
+  qId: number;
+  create_time: string;
 };
 
 export type ComponentsStateType = {
-  selectedId: string;
+  selectedId: number;
   componentList: Array<ComponentInfoType>;
   copiedComponent: ComponentInfoType | null;
+  addComponentIdsArr: Array<number>;
+  deleteComponentIdsArr: Array<number>;
 };
 
 const INIT_STATE: ComponentsStateType = {
-  selectedId: "",
+  selectedId: -1,
   componentList: new Array<ComponentInfoType>(),
   copiedComponent: null,
+  addComponentIdsArr: [],
+  deleteComponentIdsArr: [],
 };
 
 export const componentsSlice = createSlice({
@@ -40,7 +58,7 @@ export const componentsSlice = createSlice({
     //修改selectedId
     changeSelectedId: (
       state: ComponentsStateType,
-      action: PayloadAction<string>
+      action: PayloadAction<number>
     ) => {
       state.selectedId = action.payload;
     },
@@ -48,16 +66,19 @@ export const componentsSlice = createSlice({
     //添加新组件
     addComponent: (
       state: ComponentsStateType,
-      action: PayloadAction<ComponentInfoType>
+      action: PayloadAction<AddComponentInfoType>
     ) => {
       const newComponent = action.payload;
-      insertNewComponent(state, newComponent);
+      const id = new Date().getTime();
+      let { addComponentIdsArr } = state;
+      state.addComponentIdsArr = [id, ...addComponentIdsArr];
+      insertNewComponent(state, { ...newComponent, id });
     },
 
     //修改组件属性
     changeComponentProps: (
       state: ComponentsStateType,
-      action: PayloadAction<{ id: string; newProps: ComponentPropsType }>
+      action: PayloadAction<{ id: number; newProps: ComponentPropsType }>
     ) => {
       const { id, newProps } = action.payload;
 
@@ -69,11 +90,27 @@ export const componentsSlice = createSlice({
 
     //删除选中的组件
     removeSelectedComponent: (state: ComponentsStateType) => {
-      const { componentList = [], selectedId: removeId } = state;
+      let {
+        componentList = [],
+        selectedId: removeId,
+        deleteComponentIdsArr,
+        addComponentIdsArr,
+      } = state;
+      let i = addComponentIdsArr.indexOf(removeId);
+
+      if (i >= 0) {
+        state.addComponentIdsArr = [
+          ...addComponentIdsArr.slice(0, i),
+          ...addComponentIdsArr.slice(i + 1),
+        ];
+      } else {
+        state.deleteComponentIdsArr = [...deleteComponentIdsArr, removeId];
+      }
+      console.log(addComponentIdsArr);
 
       //重新计算selectedId
       const newSelectedId = getNextSelectedId(removeId, componentList);
-      state.selectedId = newSelectedId as string;
+      state.selectedId = newSelectedId;
 
       const index = componentList.findIndex((c) => c.id === removeId);
 
@@ -82,23 +119,24 @@ export const componentsSlice = createSlice({
         ...componentList.slice(index + 1),
       ];
     },
+
     //隐藏和显示组件
     changeComponentHidden: (
       state: ComponentsStateType,
-      action: PayloadAction<{ id: string; isHidden: boolean }>
+      action: PayloadAction<{ id: number; isHidden: number }>
     ) => {
       const { componentList } = state;
       const { id, isHidden } = action.payload;
 
       //重新计算selectedId
-      let newSelectedId = "";
+      let newSelectedId = -1;
       if (isHidden) {
         //隐藏
-        newSelectedId = getNextSelectedId(id, componentList) as string;
+        newSelectedId = getNextSelectedId(id, componentList);
       } else {
         newSelectedId = id;
       }
-      state.selectedId = newSelectedId as string;
+      state.selectedId = newSelectedId;
 
       const curComp = componentList.find((c) => c.id === id);
       if (curComp) {
@@ -109,13 +147,13 @@ export const componentsSlice = createSlice({
     //锁定与解锁组件
     lockComponent: (
       state: ComponentsStateType,
-      action: PayloadAction<{ id: string }>
+      action: PayloadAction<{ id: number }>
     ) => {
       const { id } = action.payload;
 
       const curComp = state.componentList.find((c) => c.id === id);
       if (curComp) {
-        curComp.isLocked = !curComp.isLocked;
+        curComp.isLocked = curComp.isLocked == 0 ? 1 : 0;
       }
     },
 
@@ -129,10 +167,11 @@ export const componentsSlice = createSlice({
 
     //粘贴组件
     pasteCopiedComponent: (state: ComponentsStateType) => {
-      const { copiedComponent } = state;
+      const { copiedComponent, addComponentIdsArr } = state;
       if (copiedComponent == null) return;
-
-      copiedComponent.id = nanoid();
+      let id = new Date().getTime();
+      copiedComponent.id = id;
+      state.addComponentIdsArr = [...addComponentIdsArr, id];
       insertNewComponent(state, copiedComponent);
     },
 
@@ -156,7 +195,7 @@ export const componentsSlice = createSlice({
     //修改组件标题
     changeComponentTitle: (
       state: ComponentsStateType,
-      action: PayloadAction<{ id: string; title: string }>
+      action: PayloadAction<{ id: number; title: string }>
     ) => {
       const { selectedId, componentList } = state;
       const { title, id } = action.payload;
@@ -179,6 +218,48 @@ export const componentsSlice = createSlice({
       const { oldIndex, newIndex } = action.payload;
       state.componentList = arrayMove(curComponentList, oldIndex, newIndex);
     },
+
+    //增加组件id
+    addComponentIds: (
+      state: ComponentsStateType,
+      action: PayloadAction<{ id: number }>
+    ) => {
+      const { addComponentIdsArr } = state;
+      state.addComponentIdsArr = [...addComponentIdsArr, action.payload.id];
+      console.log(state.addComponentIdsArr);
+    },
+
+    //删除组件id
+    deleteComponentIds: (
+      state: ComponentsStateType,
+      action: PayloadAction<{ id: number }>
+    ) => {
+      const { id } = action.payload;
+      let { deleteComponentIdsArr, addComponentIdsArr } = state;
+      let index = addComponentIdsArr.indexOf(id);
+      if (index >= 0) {
+        state.addComponentIdsArr = [
+          ...addComponentIdsArr.slice(0, index),
+          ...addComponentIdsArr.slice(index + 1),
+        ];
+      } else {
+        console.log(id);
+
+        state.deleteComponentIdsArr = [...deleteComponentIdsArr, id];
+      }
+      console.log(state.addComponentIdsArr);
+      console.log(state.deleteComponentIdsArr);
+    },
+
+    //清空删除组件数组
+    clearDeleteComponentIds: (state: ComponentsStateType) => {
+      state.deleteComponentIdsArr = [];
+    },
+
+    //清空添加组件数组id
+    clearAddComponentIds: (state: ComponentsStateType) => {
+      state.addComponentIdsArr = [];
+    },
   },
 });
 
@@ -196,6 +277,10 @@ export const {
   selectNextComponent,
   changeComponentTitle,
   moveComponent,
+  addComponentIds,
+  deleteComponentIds,
+  clearDeleteComponentIds,
+  clearAddComponentIds,
 } = componentsSlice.actions;
 
 export default componentsSlice.reducer;

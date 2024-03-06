@@ -10,10 +10,12 @@ import {
 } from "@ant-design/icons";
 import { createQuestionService } from "../../services/question";
 import { useRequest } from "ahooks";
+import useGetUserInfo from "../../hooks/useGetUserInfo";
 
 const ManageLayout = () => {
   const nav = useNavigate();
   const { pathname } = useLocation();
+  const { id: userId } = useGetUserInfo();
 
   // const [loading, setLoading] = useState(false);
   // async function handleCreateClick() {
@@ -28,17 +30,35 @@ const ManageLayout = () => {
   //   }
   //   setLoading(false);
   // }
+
   const {
     loading,
     error,
     run: handleCreateClick,
-  } = useRequest(createQuestionService, {
-    manual: true,
-    onSuccess(result) {
-      nav(`/question/edit/${result.id}`);
-      message.success("创建成功");
+  } = useRequest(
+    async () => {
+      let props = {
+        title: "未命名",
+        description: "",
+        isPublished: 0,
+        isDeleted: 0,
+        creatorId: userId,
+      };
+      let result = await createQuestionService(props);
+      console.log(result);
+
+      if (result.code == 0) {
+        nav(`/question/edit/${result.info.id}`);
+        message.success("创建成功");
+      }
     },
-  });
+    {
+      manual: true,
+      onSuccess(result) {
+        console.log(result);
+      },
+    }
+  );
 
   return (
     <div className={styles.container}>
@@ -61,14 +81,7 @@ const ManageLayout = () => {
           >
             我的问卷
           </Button>
-          <Button
-            type={pathname.startsWith("/manage/star") ? "default" : "text"}
-            size="large"
-            icon={<StarOutlined />}
-            onClick={() => nav("/manage/star")}
-          >
-            星标问卷
-          </Button>
+
           <Button
             type={pathname.startsWith("/manage/trash") ? "default" : "text"}
             size="large"

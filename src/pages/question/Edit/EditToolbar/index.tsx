@@ -23,6 +23,11 @@ import {
 
 import { ActionCreators as UndoActionCreators } from "redux-undo";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
+import {
+  addQuestionItemService,
+  deleteQuestionItemService,
+  updateQuestionItemService,
+} from "../../../../services/question";
 
 const EditToolbar = () => {
   const dispatch = useDispatch();
@@ -35,17 +40,18 @@ const EditToolbar = () => {
   const isLast = selectedIndex + 1 >= length;
 
   //删除组件
-  function handleDelete() {
+  async function handleDelete() {
+    console.log(selectedId);
     dispatch(removeSelectedComponent());
   }
 
   //隐藏组件
-  function handleHidden() {
-    dispatch(changeComponentHidden({ id: selectedId, isHidden: true }));
+  async function handleHidden() {
+    dispatch(changeComponentHidden({ id: selectedId, isHidden: 1 }));
   }
 
   //锁定组件
-  function handleLock() {
+  async function handleLock() {
     dispatch(lockComponent({ id: selectedId }));
   }
 
@@ -55,7 +61,10 @@ const EditToolbar = () => {
   }
 
   //粘贴组件
-  function paste() {
+  async function paste() {
+    if (!copiedComponent || !selectedComponent) {
+      return;
+    }
     dispatch(pasteCopiedComponent());
   }
 
@@ -137,18 +146,10 @@ const EditToolbar = () => {
         ></Button>
       </Tooltip>
       <Tooltip title="撤销">
-        <Button
-          shape="circle"
-          icon={<UndoOutlined />}
-          onClick={undo}
-        ></Button>
+        <Button shape="circle" icon={<UndoOutlined />} onClick={undo}></Button>
       </Tooltip>
       <Tooltip title="重做">
-        <Button
-          shape="circle"
-          icon={<RedoOutlined />}
-          onClick={redo}
-        ></Button>
+        <Button shape="circle" icon={<RedoOutlined />} onClick={redo}></Button>
       </Tooltip>
     </Space>
   );

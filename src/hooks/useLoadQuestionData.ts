@@ -9,7 +9,8 @@ import { getQuestionId, idStateType } from "../store/questionIdReducer";
 import { resetPageInfo } from "../store/pageInfoReducer";
 
 function useLoadQuestionData() {
-  const { id = "" } = useParams();
+  let { id: paramsId = "-1" } = useParams();
+  let id = parseInt(paramsId);
   const { id: preId } = useSelector<StateType>(
     (state) => state.questionId
   ) as idStateType;
@@ -18,14 +19,13 @@ function useLoadQuestionData() {
   let isToRun = true;
 
   const { data, loading, error, run } = useRequest(
-    async (id: string) => {
+    async (id: number) => {
       if (!id) {
         throw new Error("未获取到问卷信息");
       }
       const data = await getQuestionService(id);
       isToRun = false;
-
-      return data.data;
+      return data.info;
     },
     {
       manual: true,
@@ -39,26 +39,37 @@ function useLoadQuestionData() {
       run(id);
       dispatch(getQuestionId({ id }));
     }
+
     if (!data) {
       return;
     }
+
     const {
       title = "",
-      desc = "",
-      js = "",
-      css = "",
+      description = "",
+      isPublished = 0,
+      isDeleted = 0,
       componentList = [],
     } = data;
 
-    let selectedId = "";
+    let selectedId = -1;
     if (componentList.length > 0) {
+      for (let i = 0; i < componentList.length; i++) {
+        componentList[i].props = JSON.parse(componentList[i].props);
+      }
       selectedId = componentList[0].id;
     }
 
     dispatch(
-      resetComponents({ componentList, selectedId, copiedComponent: null })
+      resetComponents({
+        componentList,
+        selectedId,
+        copiedComponent: null,
+        addComponentIdsArr: [],
+        deleteComponentIdsArr: [],
+      })
     );
-    dispatch(resetPageInfo({ title, desc, css, js }));
+    dispatch(resetPageInfo({ title, description, isPublished, isDeleted }));
   }, [data, id]);
 
   //   const [loading, setLoading] = useState(true);

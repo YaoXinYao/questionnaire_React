@@ -10,22 +10,38 @@ export async function getUserInfoService(): Promise<ResDataType> {
 //注册
 export async function registerService(
   username: string,
-  password: string
+  email: string,
+  code: string
 ): Promise<ResDataType> {
-  const url = "/api/user/register";
-  const body = { username, password };
+  const url = "/api/user/addUser";
+  const body = { username, email, code };
   const data = (await axios.post(url, body)) as ResDataType;
+
   return data;
 }
 
 //登录
 export async function loginService(
-  username: string,
-  password: string
+  email: string,
+  code: string
 ): Promise<ResDataType> {
   const url = "/api/user/login";
-  const body = { username, password };
+  const body = { email, code };
   const data = (await axios.post(url, body)) as ResDataType;
-  console.log("data", data);
+  return data;
+}
+
+//发送验证码
+export async function sendCodeService(email: string): Promise<ResDataType> {
+  const url = "/api/user/sendCode";
+  const params = { email };
+  let data = axios.get(url, { params }) as ResDataType;
+  return data;
+}
+
+//获取登录用户信息
+export async function getLoginUserInfoService() {
+  const url = "/api/user/getLoginUser";
+  let data = axios.get(url) as ResDataType;
   return data;
 }

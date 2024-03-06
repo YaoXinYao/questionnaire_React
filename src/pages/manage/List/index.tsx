@@ -7,6 +7,7 @@ import ListSearch from "../../../components/ListSearch";
 import { useSearchParams } from "react-router-dom";
 import { getQuestionListService } from "../../../services/question";
 import { LIST_PAGE_SIZE, LIST_SEARCH_PARAM_KEY } from "../../../constant";
+import { QuestionnaireResType } from "../../../type/question";
 const { Title } = Typography;
 
 const List = () => {
@@ -15,7 +16,8 @@ const List = () => {
   //是否已经开始加载
   const [started, setStarted] = useState(false);
   const [page, setPage] = useState(1);
-  const [list, setList] = useState([]);
+  const [pageSize, setPageSize] = useState(8);
+  const [list, setList] = useState<QuestionnaireResType[]>([]);
   const [total, setTotal] = useState(0);
   const haveMoreData = total > list.length;
   const [searchParams] = useSearchParams();
@@ -25,7 +27,7 @@ const List = () => {
   useEffect(() => {
     setStarted(false);
     setList([]);
-    setPage(0);
+    setPage(1);
     setTotal(0);
   }, [keyword]);
 
@@ -34,16 +36,25 @@ const List = () => {
     async () => {
       const data = await getQuestionListService({
         page,
-        pageSize: LIST_PAGE_SIZE,
-        keyword,
+        pageSize,
+        isDeleted: 0,
+        title: keyword,
       });
+      console.log(data);
+
       return data;
     },
     {
       manual: true,
       onSuccess(result) {
-        const { list: l = [], total = 0 } = result.data;
-        setList(list.concat(l));
+        const {
+          data,
+          total = 0,
+          totalPages = 0,
+          currentPage = 0,
+          count = 0,
+        } = result.info;
+        setList(list.concat(data));
         setTotal(total);
         setPage(page + 1);
       },
@@ -82,6 +93,11 @@ const List = () => {
     };
   }, [searchParams, haveMoreData]);
 
+  const updateList = (questionnaire: QuestionnaireResType) => {
+    //复制问卷后向列表中添加
+    setList((prevList) => [questionnaire, ...prevList]);
+  };
+
   const loadMoreContentElem = useMemo(() => {
     if (!started || loading) {
       return <Spin />;
@@ -108,8 +124,14 @@ const List = () => {
       <div className={styles.content}>
         {list.length > 0 &&
           list.map((q: any) => {
-            const { _id } = q;
-            return <QuestionCard key={_id} {...q}></QuestionCard>;
+            const { id } = q;
+            return (
+              <QuestionCard
+                key={id}
+                {...q}
+                updateList={updateList}
+              ></QuestionCard>
+            );
           })}
       </div>
       <div className={styles.footer}>

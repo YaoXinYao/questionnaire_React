@@ -3,8 +3,9 @@ import useGetPageInfo from "../../../../hooks/useGetPageInfo";
 import { Form, Input } from "antd";
 import { useDispatch } from "react-redux";
 import { resetPageInfo } from "../../../../store/pageInfoReducer";
+import TextArea from "antd/es/input/TextArea";
 
-const PageSetting = () => {
+const QuestionnireDescription = () => {
   const pageInfo = useGetPageInfo();
   const [form] = Form.useForm();
   const dispatch = useDispatch();
@@ -31,17 +32,16 @@ const PageSetting = () => {
       >
         <Input placeholder="请输入问卷标题" />
       </Form.Item>
-      <Form.Item label="问卷描述" name="desc">
-        <Input placeholder="请输入问卷描述" />
-      </Form.Item>
-      <Form.Item label="样式代码" name="css">
-        <Input placeholder="请输入css样式代码" />
-      </Form.Item>
-      <Form.Item label="脚本代码" name="js">
-        <Input placeholder="请输入js脚本代码" />
+      <Form.Item label="问卷描述" name="description">
+        <TextArea
+          placeholder="请输入问卷描述"
+          autoSize={{ minRows: 2, maxRows: 6 }}
+          maxLength={100}
+          showCount
+        />
       </Form.Item>
     </Form>
   );
 };
 
-export default PageSetting;
+export default QuestionnireDescription;

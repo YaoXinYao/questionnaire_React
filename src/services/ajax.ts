@@ -17,16 +17,16 @@ instance.interceptors.request.use(
   }
 );
 
-//response拦截器：统一拦截error和msg
+//response拦截器：统一拦截code和msg
 instance.interceptors.response.use((res) => {
   const resData = (res.data || {}) as ResType;
-  const { error, data, msg } = resData;
-  if (error !== 0) {
-    if (msg) {
-      message.error(msg);
+  const { code, msg, info } = resData;
+  if (code !== 0) {
+    if (info) {
+      message.error(info as string);
     }
 
-    throw new Error(msg);
+    throw new Error(info as string);
   }
   return resData as any;
 });
@@ -34,8 +34,8 @@ instance.interceptors.response.use((res) => {
 export default instance;
 
 export type ResType = {
-  error: number;
-  data?: ResDataType;
+  code: number;
+  info?: ResDataType | string;
   msg?: string;
 };
 

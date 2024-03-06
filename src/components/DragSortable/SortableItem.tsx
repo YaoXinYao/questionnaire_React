@@ -2,13 +2,13 @@ import React, { FC } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 type PropsType = {
-  id: string;
+  id: number;
   children: JSX.Element;
 };
 
 const SortableItem: FC<PropsType> = ({ id, children }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
+    useSortable({ id: id });
 
   const style = {
     transform: CSS.Transform.toString(transform),

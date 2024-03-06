@@ -17,7 +17,7 @@ import {
 
 type PropType = {
   children: JSX.Element | JSX.Element[];
-  items: Array<{ id: string; [key: string]: any }>;
+  items: Array<{ id: number; [key: string]: any }>;
   onDragEnd: (oldIndex: number, newIndex: number) => void;
 };
 

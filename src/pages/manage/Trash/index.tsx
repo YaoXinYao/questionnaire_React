@@ -16,7 +16,7 @@ import ListPage from "../../../components/ListPage";
 import ListSearch from "../../../components/ListSearch";
 import useLoadQuestionListData from "../../../hooks/useLoadQuestionListData";
 import {
-  deleteQuestionService,
+  deleteQuestionnaireService,
   updateQuestionService,
 } from "../../../services/question";
 import styles from "./index.module.scss";
@@ -25,23 +25,31 @@ const { confirm } = Modal;
 
 const Trash = () => {
   useTitle("乐答问卷-回收站");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const {
     loading,
     error,
     data = {},
     refresh,
-  } = useLoadQuestionListData({ isDeleted: true });
-  const {data:res={}}=data
-  const { list = {}, total = 0 } = res;
+  } = useLoadQuestionListData({ page, pageSize, isDeleted: 1 });
+
+  const { info = {} } = data;
+  const {
+    data: list = {},
+    total = 0,
+    totalPages = 0,
+    count = 0,
+    currentPage = 1,
+  } = info;
   //选中的id
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   //恢复
   const { loading: recoverLoading, run: recoverQuestion } = useRequest(
     async () => {
-      console.log(selectedIds);
       for await (const id of selectedIds) {
-        await updateQuestionService(id, { isDeleted: false });
+        await updateQuestionService({ id, isDeleted: 0 });
       }
     },
     {
@@ -58,7 +66,7 @@ const Trash = () => {
   //删除
   const { loading: deleteLoading, run: deleteQuestion } = useRequest(
     async () => {
-      await deleteQuestionService(selectedIds);
+      await deleteQuestionnaireService(selectedIds);
     },
     {
       manual: true,
@@ -102,7 +110,7 @@ const Trash = () => {
     },
     {
       title: "创建时间",
-      dataIndex: "createAt",
+      dataIndex: "create_time",
     },
   ];
 
@@ -127,11 +135,11 @@ const Trash = () => {
         dataSource={list}
         columns={tableColumns}
         pagination={false}
-        rowKey={(q) => q._id}
+        rowKey={(q) => q.id}
         rowSelection={{
           type: "checkbox",
           onChange: (selectedRowKeys) => {
-            setSelectedIds(selectedRowKeys as string[]);
+            setSelectedIds(selectedRowKeys as number[]);
           },
         }}
       ></Table>

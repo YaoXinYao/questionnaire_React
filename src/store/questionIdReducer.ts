@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const INIT_STATE = {
-  id: "-1",
+  id: -1,
 };
 
 export type idStateType = {
-  id: string;
+  id: number;
 };
 
 export const componentsSlice = createSlice({

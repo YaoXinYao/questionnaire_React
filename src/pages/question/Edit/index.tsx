@@ -13,7 +13,7 @@ const Edit = () => {
   const dispatch = useDispatch();
 
   function clearSelected() {
-    dispatch(changeSelectedId(""));
+    dispatch(changeSelectedId(-1));
   }
 
   return (

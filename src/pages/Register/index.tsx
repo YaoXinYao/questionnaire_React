@@ -1,37 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 import { Space, Typography, Input, Form, Button, message } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 
 import styles from "./index.module.scss";
 import { useRequest } from "ahooks";
-import { registerService } from "../../services/user";
+import { registerService, sendCodeService } from "../../services/user";
+import { useForm } from "antd/es/form/Form";
 
 const { Title } = Typography;
 
 const Register = () => {
   const nav = useNavigate();
-  const { loading: regiserLoading, run: regiser } = useRequest(
-    async (values) => {
-      const { username, password } = values;
-      const data = await registerService(username, password);
+  const [form] = useForm();
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [btnStr, setBtnStr] = useState("发送验证码");
+  const { loading: regiserLoading, run: register } = useRequest(
+    async (values: { username: string; email: string; code: string }) => {
+      let { username, email, code } = values;
+      const data = await registerService(username, email, code);
       return data;
     },
     {
       manual: true,
       onSuccess(result) {
-        console.log(result);
-        message.success("注册成功");
-        nav("/login");
+        if (result.code == 0) {
+          message.success("注册成功");
+          nav("/login");
+        } else {
+          message.error(result.info);
+        }
       },
     }
   );
 
   let onFinish = (value: any) => {
-    console.log(value);
 
-    regiser(value);
+    register(value);
   };
+
+  function sendCode() {
+    sendCodeService(form.getFieldsValue().email).then((res) => {
+      console.log(res);
+    });
+
+    setIsDisabled(true);
+    let count = 30;
+    let timer = setInterval(() => {
+      count--;
+      setBtnStr(`${count}秒后可再次发送`);
+      if (count <= 0) {
+        clearInterval(timer);
+        setIsDisabled(false);
+        setBtnStr(`发送验证码`);
+      }
+    }, 1000);
+  }
 
   return (
     <div className={styles.container}>
@@ -48,6 +72,7 @@ const Register = () => {
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 16 }}
           onFinish={onFinish}
+          form={form}
         >
           <Form.Item
             label="用户名"
@@ -71,34 +96,16 @@ const Register = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="密码"
-            name="password"
-            rules={[{ required: true, message: "请输入密码" }]}
-          >
-            <Input.Password />
+          <Form.Item label="邮箱" name="email">
+            <Input />
           </Form.Item>
-          <Form.Item
-            label="确认密码"
-            name="confirm"
-            dependencies={["password"]} //依赖password
-            rules={[
-              {
-                required: true,
-                message: "请确认密码",
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  } else {
-                    return Promise.reject(new Error("两次密码输入不一致"));
-                  }
-                },
-              }),
-            ]}
-          >
-            <Input.Password />
+          <Form.Item label="验证码" name="code">
+            <Space.Compact style={{ width: "100%" }}>
+              <Input />
+              <Button type="primary" disabled={isDisabled} onClick={sendCode}>
+                {btnStr}
+              </Button>
+            </Space.Compact>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
             <Space>

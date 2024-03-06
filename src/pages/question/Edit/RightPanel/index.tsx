@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { FileTextOutlined, SettingOutlined } from "@ant-design/icons";
+import { FileTextOutlined } from "@ant-design/icons";
 import { Tabs } from "antd";
 import ComponentProp from "../ComponentProp";
-import PageSetting from "../PageSetting/index";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
+import QuestionnireDescription from "../QuestionnireDescription";
 
 enum TAB_KEY {
   PROP_KEY = "prop",
-  SETTING_KEY = "setting",
+  DESCRIPTION_KEY = "description",
 }
 
 const RightPanel = () => {
   const [activeKey, setActiveKey] = useState(TAB_KEY.PROP_KEY);
   const { selectedId } = useGetComponentInfo();
-  useEffect(() => {
-    if (selectedId) setActiveKey(TAB_KEY.PROP_KEY);
-    else setActiveKey(TAB_KEY.SETTING_KEY);
-  }, [selectedId]);
+
+  function changeTab(key: string) {
+    setActiveKey(key as TAB_KEY); // 将 string 类型转换为 TAB_KEY 类型
+  }
+
   const tabsItems = [
     {
       key: TAB_KEY.PROP_KEY,
@@ -29,17 +30,23 @@ const RightPanel = () => {
       children: <ComponentProp />,
     },
     {
-      key: TAB_KEY.SETTING_KEY,
+      key: TAB_KEY.DESCRIPTION_KEY,
       label: (
         <span>
-          <SettingOutlined />
-          页面设置
+          <FileTextOutlined />
+          问卷描述
         </span>
       ),
-      children: <PageSetting />,
+      children: <QuestionnireDescription />,
     },
   ];
-  return <Tabs activeKey={activeKey} items={tabsItems}></Tabs>;
+  return (
+    <Tabs
+      activeKey={activeKey}
+      items={tabsItems}
+      onChange={(key: string) => changeTab(key)}
+    ></Tabs>
+  );
 };
 
 export default RightPanel;

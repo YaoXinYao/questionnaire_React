@@ -1,7 +1,7 @@
 import { useRequest } from "ahooks";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getUserInfoService } from "../services/user";
+import { getLoginUserInfoService } from "../services/user";
 import { loginReducer } from "../store/userReducer";
 import useGetUserInfo from "./useGetUserInfo";
 
@@ -10,28 +10,31 @@ function useLoadUserData() {
   const dispatch = useDispatch();
 
   //加载用户信息
-  const { run } = useRequest(getUserInfoService, {
+  const { run } = useRequest(getLoginUserInfoService, {
     manual: true,
     onSuccess(res) {
-      const { username = "" } = res.data;
+      if (res.code == 0) {
+        const { username = "", id } = res.info;
+        //存储到store
+        console.log(res);
 
-      //存储到store
-      dispatch(loginReducer({ username }));
+        dispatch(loginReducer({ username, id }));
+      }
     },
     onFinally() {
       setWaiting(false);
     },
   });
 
-  const { username } = useGetUserInfo();
+  const { username, id } = useGetUserInfo();
   useEffect(() => {
-    if (username) {
+    if (id) {
       setWaiting(false);
       return;
     }
 
     run();
-  }, [username]);
+  }, [id]);
 
   return { waiting };
 }

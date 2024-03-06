@@ -6,8 +6,9 @@ import {
 } from "../../../../components/QuestionComponents";
 import styles from "./index.module.scss";
 import { useDispatch } from "react-redux";
-import { addComponent } from "../../../../store/componentsReducer";
-import { nanoid } from "@reduxjs/toolkit";
+import {
+  addComponent,
+} from "../../../../store/componentsReducer";
 
 const { Title } = Typography;
 
@@ -15,15 +16,18 @@ function genComponent(c: ComponentConfType) {
   const { title, type, Component, defaultProps } = c;
   const dispatch = useDispatch();
 
-  function addToCanvas() {
-    dispatch(
-      addComponent({
-        id: nanoid(),
-        title,
-        type,
-        props: defaultProps,
-      })
-    );
+  async function addToCanvas() {
+    let addComponentProps = {
+      indexId: 0,
+      title,
+      type,
+      props: defaultProps,
+      isHidden: 0,
+      isLocked: 0,
+      qId: 1,
+    };
+
+    dispatch(addComponent(addComponentProps));
   }
   return (
     <div key={type} className={styles.wrapper} onClick={addToCanvas}>

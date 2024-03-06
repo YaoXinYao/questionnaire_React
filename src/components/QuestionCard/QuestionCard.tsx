@@ -4,47 +4,77 @@ import {
   EditOutlined,
   ExclamationCircleOutlined,
   LineChartOutlined,
-  StarOutlined,
+  SendOutlined,
 } from "@ant-design/icons";
 import { useRequest } from "ahooks";
-import { Button, Divider, Popconfirm, Space, Tag, Modal, message } from "antd";
+import {
+  Button,
+  Divider,
+  Popconfirm,
+  Space,
+  Tag,
+  Modal,
+  message,
+  Popover,
+  QRCode,
+  theme,
+} from "antd";
 import React, { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  addQuestionItemService,
   copyQuestionService,
+  createQuestionService,
+  getQuestionListService,
+  getQuestionService,
   updateQuestionService,
 } from "../../services/question";
 import styles from "./QuestionCard.module.scss";
+import { QuestionnaireResType } from "../../type/question";
+import useGetUserInfo from "../../hooks/useGetUserInfo";
+const { useToken } = theme;
 
 type PropsType = {
-  _id: string;
+  id: number;
   title: string;
-  isPublished: boolean;
-  isStar: boolean;
-  answerCount: number;
-  createAt: string;
+  description: string;
+  isPublished: number;
+  isDeleted: number;
+  creatorId: number;
+  create_time: string;
+  updateList: (props: QuestionnaireResType) => void;
 };
 const QuestionCard: FC<PropsType> = (props: PropsType) => {
   const nav = useNavigate();
+  const { token } = useToken();
   const { confirm } = Modal;
-  const { _id, title, createAt, answerCount, isPublished, isStar } = props;
-
-  const [isStarState, setIsStarState] = useState(isStar);
+  const {
+    id,
+    title,
+    description,
+    isPublished,
+    isDeleted,
+    create_time,
+    creatorId,
+    updateList,
+  } = props;
+  const { id: userId } = useGetUserInfo();
+  // const [isStarState, setIsStarState] = useState(isStar);
 
   //更新
-  const { loading: changeStarLoading, run: changeStar } = useRequest(
-    async () => {
-      const data = await updateQuestionService(_id, { isStar: !isStarState });
-      return data;
-    },
-    {
-      manual: true,
-      onSuccess(result) {
-        setIsStarState(!isStarState);
-        message.success("已更新");
-      },
-    }
-  );
+  // const { loading: changeStarLoading, run: changeStar } = useRequest(
+  //   async () => {
+  //     const data = await updateQuestionService(id);
+  //     return data;
+  //   },
+  //   {
+  //     manual: true,
+  //     onSuccess(result) {
+  //       setIsStarState(!isStarState);
+  //       message.success("已更新");
+  //     },
+  //   }
+  // );
 
   // function duplicate() {
   //   message.success("复制成功");
@@ -53,22 +83,40 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
   //复制
   const { loading: copyLoading, run: copy } = useRequest(
     async () => {
-      const data = await copyQuestionService(_id);
-      return data;
+      const data = await getQuestionService(id);
+      if (data.code == 0) {
+        let { id: qId, componentList, ...props } = data.info;
+        let createQuestionRes = await createQuestionService({
+          ...props,
+          isDeleted: 0,
+          isPublished: 0,
+          creatorId: userId,
+        });
+        console.log(createQuestionRes);
+        if (createQuestionRes.code == 0) {
+          for (let i = 0; i < componentList.length; i++) {
+            componentList[i].qId = createQuestionRes.info.id;
+            delete componentList[i].id;
+          }
+        }
+
+        console.log(componentList);
+
+        let addQuestionItemRes = await addQuestionItemService(componentList);
+        console.log(addQuestionItemRes);
+        updateList(createQuestionRes.info);
+        message.success("复制成功");
+      }
     },
     {
       manual: true,
-      onSuccess(result) {
-        message.success("复制成功");
-        nav(`/question/edit/${result.data.id}`);
-      },
     }
   );
 
   //删除
   const [isDeletedState, setIsDeleteState] = useState(false);
   const { loading: deleteLoading, run: deleteQuestion } = useRequest(
-    async () => await updateQuestionService(_id, { isDeleted: true }),
+    async () => await updateQuestionService({ id, isDeleted: 1 }),
     {
       manual: true,
       onSuccess() {
@@ -90,14 +138,23 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
     return null;
   }
 
+  let QRcodeContent = (
+    <Space>
+      <QRCode
+        value="https://ant.design/"
+        color={token.colorInfoText}
+        bgColor={token.colorBgLayout}
+      />
+    </Space>
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.title}>
         <div className={styles.left}>
           <Link
-            to={isPublished ? `/question/stat/${_id}` : `/question/edit/${_id}`}
+            to={isPublished ? `/question/stat/${id}` : `/question/edit/${id}`}
           >
-            {isStar && <StarOutlined style={{ color: "red" }} />}
             {title}
           </Link>
         </div>
@@ -108,8 +165,8 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
             ) : (
               <Tag>未发布</Tag>
             )}
-            <span>答卷：{answerCount}</span>
-            <span>{createAt}</span>
+            {/* <span>答卷：{answerCount}</span> */}
+            <span>{create_time}</span>
           </Space>
         </div>
       </div>
@@ -121,7 +178,8 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
               icon={<EditOutlined />}
               type="text"
               size="small"
-              onClick={() => nav(`/question/edit/${_id}`)}
+              onClick={() => nav(`/question/edit/${id}`)}
+              disabled={isPublished == 1}
             >
               编辑问卷
             </Button>
@@ -129,8 +187,8 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
               icon={<LineChartOutlined />}
               type="text"
               size="small"
-              onClick={() => nav(`/question/stat/${_id}`)}
-              disabled={isPublished}
+              onClick={() => nav(`/question/stat/${id}`)}
+              disabled={isPublished == 0}
             >
               问卷统计
             </Button>
@@ -138,15 +196,11 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
         </div>
         <div className={styles.right}>
           <Space>
-            <Button
-              type="text"
-              icon={<StarOutlined />}
-              size="small"
-              onClick={changeStar}
-              disabled={changeStarLoading}
-            >
-              {isStarState ? "取消标星" : "标星"}
-            </Button>
+            <Popover content={QRcodeContent}>
+              <Button type="text" icon={<SendOutlined />} size="small">
+                分享
+              </Button>
+            </Popover>
             <Popconfirm
               title="确定复制该问卷吗？"
               okText="确定"
