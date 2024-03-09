@@ -6,7 +6,7 @@ import { getComponent } from "../../components/AnswerComponents";
 import { QuestionType } from "../../type/question";
 import { useRequest } from "ahooks";
 import { getQuestionService } from "../../services/question";
-import { Button, Form, message } from "antd";
+import { Button, Form, Result, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { isDoneService, submitService } from "../../services/answer";
 import useGetUserInfo from "../../hooks/useGetUserInfo";
@@ -25,17 +25,16 @@ type PropsType = {
 };
 
 export default function SubmitAnswer() {
-  //   const { waiting } = useLoadUserData();
-  //   useNavPage(waiting);
-  //   let [questionnaire, setQuestionnaire] = useState({});
   const [form] = useForm();
+  const navigate = useNavigate();
+  const [isDone, setIsDone] = useState<boolean>(true);
   let [componentList, setComponentList] = useState<Array<QuestionType>>([]);
   let params = useParams();
   if (!params.id) {
-    return <></>;
+    return null;
   }
   let id = Number.parseInt(params.id);
-  let { id: userId } = useGetUserInfo();
+  let { id: userId = 0 } = useGetUserInfo();
 
   const { run } = useRequest(
     async (id: number) => {
@@ -53,18 +52,20 @@ export default function SubmitAnswer() {
     }
   );
 
-  const { data: isDone, run: isDoneRun } = useRequest(
+  const { run: isDoneRun } = useRequest(
     async () => {
       let isDoneRes = await isDoneService({ userId, questionnaireId: id });
       if (isDoneRes.code == 0) {
+        setIsDone(isDoneRes.info);
         if (isDoneRes.info) {
           message.warning("您已做过该问卷");
-          navigate(-1);
         } else {
           run(id);
         }
+        return isDoneRes.info;
       } else {
         navigate(-1);
+        return isDoneRes.info;
       }
     },
     {
@@ -72,10 +73,7 @@ export default function SubmitAnswer() {
     }
   );
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    console.log(isDone);
     isDoneRun();
   }, [id]);
 
@@ -108,9 +106,9 @@ export default function SubmitAnswer() {
       }
     }
     let res = await submitService({ userId, qId: id, answerList });
-    console.log(res);
     if (res.code == 0) {
       message.success("提交成功");
+      setIsDone(true);
     } else {
       message.error("提交失败");
     }
@@ -118,30 +116,31 @@ export default function SubmitAnswer() {
 
   return (
     <>
-      <div className={styles.container}>
-        <Form form={form}>
-          {ComponentListElem}
-          <Button
-            type="primary"
-            className={styles.submitBtn}
-            onClick={submitFn}
-          >
-            提交
-          </Button>
-        </Form>
-      </div>
+      {isDone && (
+        <Result
+          status="warning"
+          title="您已经完成该问卷"
+          extra={
+            <Button type="primary" key="console" onClick={() => navigate(-1)}>
+              返回上一页
+            </Button>
+          }
+        />
+      )}
+      {!isDone && (
+        <div className={styles.container}>
+          <Form form={form}>
+            {ComponentListElem}
+            <Button
+              type="primary"
+              className={styles.submitBtn}
+              onClick={submitFn}
+            >
+              提交
+            </Button>
+          </Form>
+        </div>
+      )}
     </>
   );
 }
-
-// export async function getServerSideProps(context: any) {
-//   const { id = "" } = context.params;
-//   const data = await getQuestionnaireInfoById(id);
-//   console.log("获得数据：", data);
-
-//   return {
-//     props: {
-//       ...data,
-//     },
-//   };
-// }

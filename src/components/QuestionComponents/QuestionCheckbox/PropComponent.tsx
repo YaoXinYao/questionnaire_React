@@ -3,8 +3,6 @@ import { OptionType, QuestionCheckboxPropsType } from "./interface";
 import { Button, Checkbox, Form, Input, Space } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { nanoid } from "@reduxjs/toolkit";
-
 const PropComponent: FC<QuestionCheckboxPropsType> = (
   props: QuestionCheckboxPropsType
 ) => {
@@ -15,11 +13,16 @@ const PropComponent: FC<QuestionCheckboxPropsType> = (
     if (onChange == null) return;
     const newValues = form.getFieldsValue() as QuestionCheckboxPropsType;
     const { list = [] } = newValues;
-    list.forEach((opt) => {
-      if (opt.value) return;
-      opt.value = nanoid(5);
+
+    const modifiedList = list.map((opt) => ({
+      ...opt,
+      value: opt.text, // 将 value 设置为与 text 相同的值
+    }));
+
+    onChange({
+      ...newValues,
+      list: modifiedList,
     });
-    onChange(newValues);
   }
 
   return (

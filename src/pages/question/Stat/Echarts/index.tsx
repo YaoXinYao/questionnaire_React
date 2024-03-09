@@ -5,33 +5,37 @@ import * as echarts from "echarts";
 import useGetStatInfo from "../../../../hooks/useGetStat";
 import React from "react";
 import styles from "./index.module.scss";
+import { LineChartOutlined } from "@ant-design/icons";
 
 const Echarts = () => {
   const { id, type, props } = useGetStatInfo();
-  const types = ["questionRadio", "questionCheckbox"];
+  const TYPES = ["questionRadio", "questionCheckbox"];
 
   useEffect(() => {
-    if (types.indexOf(type) === -1) {
+    if (TYPES.indexOf(type) === -1) {
       return;
     }
     const fetchData = async () => {
+      let chooseItem = [];
+      if (type == TYPES[0]) {
+        chooseItem = props.options;
+      } else {
+        chooseItem = props.list;
+      }
       const newOptions: { value: number; name: string }[] = [];
-      for (let i = 0; i < props.options.length; i++) {
+      for (let i = 0; i < chooseItem.length; i++) {
         const res = await statByQuestionId({
           questionId: id,
-          answerKey: props.options[i].value,
-          page: 1,
-          pageSize: 10,
+          answerKey: chooseItem[i].value,
         });
 
-        const { data, total, totalPages, currentPage, count } = res.info[0];
-        newOptions[props.options[i]] = total;
-        newOptions.push({ value: total, name: props.options[i].text });
+        const { info, code, msg } = res;
+        if (code == 0) {
+          newOptions[chooseItem[i]] = info;
+          newOptions.push({ value: info, name: chooseItem[i].text });
+        }
       }
-      console.log(newOptions);
-
       setItemNum(newOptions);
-      console.log(itemNum);
     };
 
     fetchData();
@@ -50,7 +54,7 @@ const Echarts = () => {
     },
     series: [
       {
-        name: "Access From",
+        name: "选择人数",
         type: "pie",
         radius: ["40%", "70%"],
         avoidLabelOverlap: false,
@@ -87,12 +91,22 @@ const Echarts = () => {
     }
     const newChart = echarts.init(echartRef.current);
     newChart.setOption(echartsOption);
+
+    // newChart.on("click", (params: any) => {
+    //   // 在此处处理点击事件，params 包含了点击事件的信息，例如点击的数据项等
+    //   console.log("点击事件信息：", params);
+    // });
   }, [echartsOption]);
 
   return (
     <>
-      {types.indexOf(type) === -1 && <div>暂无统计图</div>}
-      {types.indexOf(type) >= 0 && (
+      {TYPES.indexOf(type) === -1 && (
+        <div className={styles.notEcharts}>
+          暂无统计图&nbsp;
+          <LineChartOutlined />
+        </div>
+      )}
+      {TYPES.indexOf(type) >= 0 && (
         <div className={styles.echartContainer} ref={echartRef}></div>
       )}
     </>

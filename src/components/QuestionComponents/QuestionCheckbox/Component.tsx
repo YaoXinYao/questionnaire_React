@@ -13,15 +13,27 @@ const Component: FC<QuestionCheckboxPropsType> = (
     title,
     isVertical,
     list = [],
+    answer = "",
   } = { ...QuestionCheckboxDefaultProps, ...props };
+  let answerList: Array<string> = [];
+  if (answer != "") {
+    answerList = JSON.parse(answer);
+  }
+
   return (
     <div>
       <Paragraph strong>{title}</Paragraph>
       <Space direction={isVertical ? "vertical" : "horizontal"}>
         {list.map((opt) => {
           const { value, text, checked } = opt;
+          let isChecked = false;
+          if (answerList.length != 0) {
+            isChecked = answerList.includes(value);
+          } else {
+            isChecked = checked;
+          }
           return (
-            <Checkbox key={value} checked={checked}>
+            <Checkbox key={value} checked={isChecked}>
               {text}
             </Checkbox>
           );

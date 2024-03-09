@@ -30,7 +30,7 @@ const QuestionnireDescription = () => {
         name="title"
         rules={[{ required: true, message: "请输入标题" }]}
       >
-        <Input placeholder="请输入问卷标题" />
+        <Input placeholder="请输入问卷标题" showCount maxLength={20} />
       </Form.Item>
       <Form.Item label="问卷描述" name="description">
         <TextArea

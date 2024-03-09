@@ -15,12 +15,10 @@ const PropComponent: FC<QuestionRadioPropsType> = (
 
   function handleValuesChange() {
     if (onChange == null) return;
-
     const newValues = form.getFieldsValue() as QuestionRadioPropsType;
     const { options = [] } = newValues;
     options.forEach((opt) => {
-      if (opt.value) return;
-      opt.value = nanoid(5);
+      opt.value = opt.text;
     });
     onChange(newValues);
   }

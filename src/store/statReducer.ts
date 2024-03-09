@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface StatType {
+export interface StatComponentInfoType {
   id: number;
   indexId: number;
   isHidden: number;
@@ -9,20 +9,35 @@ export interface StatType {
   qId: number;
   title: string;
   type: string;
-  create_time: string;
+  create_time?: string;
+}
+export interface StatType {
+  componentInfo: StatComponentInfoType;
+  selectedUser: selectedUserType;
   key?: string;
 }
 
+interface selectedUserType {
+  id: number;
+  username: string;
+}
+
 const initialState: StatType = {
-  id: -1,
-  indexId: -1,
-  isHidden: 0,
-  isLocked: 0,
-  props: {},
-  qId: -1,
-  title: "",
-  type: "",
-  create_time: "",
+  componentInfo: {
+    id: -1,
+    indexId: -1,
+    isHidden: 0,
+    isLocked: 0,
+    props: {},
+    qId: -1,
+    title: "",
+    type: "",
+    create_time: "",
+  },
+  selectedUser: {
+    id: -1,
+    username: "",
+  },
   key: "",
 };
 
@@ -30,20 +45,27 @@ export const stateSlice = createSlice({
   name: "questionnaire",
   initialState,
   reducers: {
-    addQuestionnaire: (state, action: PayloadAction<StatType>) => {
-      return action.payload;
-    },
-    updateQuestionnaire: (state, action: PayloadAction<StatType>) => {
-      return { ...state, ...action.payload };
+    addQuestionnaire: (state, action: PayloadAction<StatComponentInfoType>) => {
+      state.componentInfo = action.payload;
     },
     deleteQuestionnaire: (state) => {
-      return initialState;
+      state.componentInfo = initialState.componentInfo;
+    },
+    updateSelectedUserId: (state, action: PayloadAction<selectedUserType>) => {
+      state.selectedUser = action.payload;
+    },
+    updateKey: (state, action: PayloadAction<string>) => {
+      state.key = action.payload;
     },
   },
 });
 
-export const { addQuestionnaire, updateQuestionnaire, deleteQuestionnaire } =
-  stateSlice.actions;
+export const {
+  addQuestionnaire,
+  updateSelectedUserId,
+  updateKey,
+  deleteQuestionnaire,
+} = stateSlice.actions;
 
 export const selectQuestionnaire = (state: { questionnaire: AnswerType }) =>
   state.questionnaire;

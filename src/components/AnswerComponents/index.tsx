@@ -15,7 +15,7 @@ type ComponentInfoType = {
   isHidden: number;
   isLocked: number;
   qId: number;
-  create_time: string;
+  create_time?: string;
 };
 export const getComponent = (component: ComponentInfoType) => {
   let { id, type, isHidden, props = {} } = component;

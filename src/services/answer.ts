@@ -24,6 +24,7 @@ export async function getSubmitListService(props: {
   qId: number;
   page: number;
   pageSize: number;
+  searchKey: string;
 }) {
   const url = "/api/answer/getSubmitList";
   const data = (await axios.get(url, { params: props })) as ResDataType;
@@ -33,10 +34,18 @@ export async function getSubmitListService(props: {
 export async function statByQuestionId(props: {
   questionId: number;
   answerKey?: string;
-  page: number;
-  pageSize: number;
 }) {
   const url = "/api/answer/statByQuestionId";
+  const data = (await axios.get(url, { params: props })) as ResDataType;
+  return data;
+}
+
+//获取某个人的答卷
+export async function getUserAnswerService(props: {
+  userId: number;
+  questionnaireId: number;
+}) {
+  const url = `/api/answer/getUserAnswer`;
   const data = (await axios.get(url, { params: props })) as ResDataType;
   return data;
 }

@@ -11,13 +11,17 @@ const { TextArea } = Input;
 const QuestionTextArea: FC<QuestionTextAreaPropsType> = (
   props: QuestionTextAreaPropsType
 ) => {
-  const { title, placeholder } = { ...QuestionTextAreaDefaultProps, ...props };
+  const {
+    title,
+    placeholder,
+    answer = "",
+  } = { ...QuestionTextAreaDefaultProps, ...props };
 
   return (
     <div>
       <Paragraph strong>{title}</Paragraph>
       <div>
-        <TextArea placeholder={placeholder}></TextArea>
+        <TextArea placeholder={placeholder} value={answer}></TextArea>
       </div>
     </div>
   );

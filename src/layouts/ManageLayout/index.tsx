@@ -11,11 +11,12 @@ import {
 import { createQuestionService } from "../../services/question";
 import { useRequest } from "ahooks";
 import useGetUserInfo from "../../hooks/useGetUserInfo";
+import { CreateQuestionnaireType } from "../../type/question";
 
 const ManageLayout = () => {
   const nav = useNavigate();
   const { pathname } = useLocation();
-  const { id: userId } = useGetUserInfo();
+  const { id: userId = 0 } = useGetUserInfo();
 
   // const [loading, setLoading] = useState(false);
   // async function handleCreateClick() {
@@ -37,7 +38,7 @@ const ManageLayout = () => {
     run: handleCreateClick,
   } = useRequest(
     async () => {
-      let props = {
+      let props: CreateQuestionnaireType = {
         title: "未命名",
         description: "",
         isPublished: 0,
@@ -45,8 +46,6 @@ const ManageLayout = () => {
         creatorId: userId,
       };
       let result = await createQuestionService(props);
-      console.log(result);
-
       if (result.code == 0) {
         nav(`/question/edit/${result.info.id}`);
         message.success("创建成功");
@@ -54,9 +53,6 @@ const ManageLayout = () => {
     },
     {
       manual: true,
-      onSuccess(result) {
-        console.log(result);
-      },
     }
   );
 

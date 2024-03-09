@@ -9,6 +9,7 @@ import StatHeader from "./StatHeader/index";
 import ComponentList from "./ComponentList";
 import FormList from "./FormList";
 import Echarts from "./Echarts";
+import PersonalQuestionnaire from "./PersonalQuestionnaire";
 
 const Stat = () => {
   const { loading } = useLoadQuesionData();
@@ -63,6 +64,7 @@ const Stat = () => {
         {loading && loadingElem}
         {!loading && <div className={styles.content}>{getContentElem()}</div>}
       </div>
+      <PersonalQuestionnaire />
     </div>
   );
 };

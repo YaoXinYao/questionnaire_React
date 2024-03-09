@@ -39,7 +39,11 @@ const EditHeader = () => {
     id = parseInt(paramsId);
   }
 
-  async function saveCompnentInfo(): Promise<boolean> {
+  async function saveCompnentInfo() {
+    if (componentList.length == 0) {
+      message.warning("保存失败，请添加问题");
+      return "not question";
+    }
     let indexArr = [];
     let addArr = [];
     let updateArr = [];
@@ -103,13 +107,19 @@ const EditHeader = () => {
   const { loading: saveLoading, run: save } = useRequest(
     async () => {
       if (!id) return;
-
+      if (title.trim() == "") {
+        message.error("请填写问卷名");
+        return;
+      }
       let questionnaireRes = await updateQuestionService({
         id,
         ...pageInfo,
         isPublished: 0,
       });
       let questionRes = await saveCompnentInfo();
+      if (questionRes == "not question") {
+        return;
+      }
       if (questionRes && questionnaireRes.code == 0) {
         message.success("保存成功");
       } else if (!questionRes && questionnaireRes.code == -1) {
@@ -143,12 +153,19 @@ const EditHeader = () => {
   const { loading: pubLoading, run: pub } = useRequest(
     async () => {
       if (!id) return;
+      if (title.trim() == "") {
+        message.error("请填写问卷名");
+        return;
+      }
       let questionnaireRes = await updateQuestionService({
         id,
         ...pageInfo,
         isPublished: 1,
       });
       let questionRes = await saveCompnentInfo();
+      if (questionRes == "not question") {
+        return;
+      }
       if (questionRes && questionnaireRes.code == 0) {
         message.success("保存成功");
         nav("/manage/list");
@@ -167,7 +184,7 @@ const EditHeader = () => {
 
   function handleTitleChange(event: ChangeEvent<HTMLInputElement>) {
     const newTitle = event.target.value.trim();
-    if (!newTitle) return;
+    // if (!newTitle) return;
     dispatch(changePageTitle(newTitle));
   }
   return (
@@ -181,6 +198,8 @@ const EditHeader = () => {
             {editState && (
               <Input
                 value={title}
+                showCount
+                maxLength={20}
                 onChange={handleTitleChange}
                 onPressEnter={() => setEditState(false)}
                 onBlur={() => setEditState(false)}

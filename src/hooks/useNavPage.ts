@@ -4,7 +4,7 @@ import { isLoginOrRegister, isNoNeedUserInfo } from "../router";
 import useGetUserInfo from "./useGetUserInfo";
 
 function useNavPage(waiting: boolean) {
-  const { username } = useGetUserInfo();
+  const { id } = useGetUserInfo();
   const { pathname } = useLocation();
   const nav = useNavigate();
 
@@ -12,7 +12,7 @@ function useNavPage(waiting: boolean) {
     if (waiting) return;
 
     //已经登录
-    if (username) {
+    if (id && id > 0) {
       //判断当前路由是否是登录页或者注册页面
       if (isLoginOrRegister(pathname)) {
         nav("/manage/list");
@@ -23,9 +23,9 @@ function useNavPage(waiting: boolean) {
     if (isNoNeedUserInfo(pathname)) {
       return;
     } else {
-      if (!username) nav("/login");
+      if (!id || id == 0) nav("/login");
     }
-  }, [waiting, username, pathname]);
+  }, [waiting, id, pathname]);
 }
 
 export default useNavPage;

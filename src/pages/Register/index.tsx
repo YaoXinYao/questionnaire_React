@@ -7,6 +7,7 @@ import styles from "./index.module.scss";
 import { useRequest } from "ahooks";
 import { registerService, sendCodeService } from "../../services/user";
 import { useForm } from "antd/es/form/Form";
+import { EMAILEXP } from "../../constant";
 
 const { Title } = Typography;
 
@@ -35,87 +36,108 @@ const Register = () => {
   );
 
   let onFinish = (value: any) => {
-
     register(value);
   };
 
   function sendCode() {
-    sendCodeService(form.getFieldsValue().email).then((res) => {
-      console.log(res);
-    });
-
     setIsDisabled(true);
-    let count = 30;
-    let timer = setInterval(() => {
-      count--;
-      setBtnStr(`${count}秒后可再次发送`);
-      if (count <= 0) {
-        clearInterval(timer);
+    sendCodeService(form.getFieldsValue().email).then((res) => {
+      if (res.code == 0) {
+        message.success("发送成功");
+        let count = 30;
+        let timer = setInterval(() => {
+          count--;
+          setBtnStr(`${count}秒后可再次发送`);
+          if (count <= 0) {
+            clearInterval(timer);
+            setIsDisabled(false);
+            setBtnStr(`发送验证码`);
+          }
+        }, 1000);
+      } else {
         setIsDisabled(false);
-        setBtnStr(`发送验证码`);
+        message.error("发送失败");
       }
-    }, 1000);
+    });
   }
 
   return (
     <div className={styles.container}>
-      <div>
-        <Space>
-          <Title level={2}>
-            <UserAddOutlined />
-          </Title>
-          <Title level={2}>注册新用户</Title>
-        </Space>
-      </div>
-      <div>
-        <Form
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
-          onFinish={onFinish}
-          form={form}
-        >
-          <Form.Item
-            label="用户名"
-            name="username"
-            rules={[
-              {
-                required: true,
-                message: "请输入用户名",
-              },
-              {
-                type: "string",
-                min: 3,
-                max: 15,
-                message: "用户名长度为5-12位",
-              },
-              {
-                pattern: /^\w+$/,
-                message: "只能是字母数字下划线",
-              },
-            ]}
+      <div className={styles.formContainer}>
+        <div className={styles.header}>
+          <Space>
+            <Title level={3}>注册</Title>
+          </Space>
+        </div>
+        <div>
+          <Form
+            labelCol={{ span: 6 }}
+            wrapperCol={{ span: 16 }}
+            onFinish={onFinish}
+            form={form}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item label="邮箱" name="email">
-            <Input />
-          </Form.Item>
-          <Form.Item label="验证码" name="code">
-            <Space.Compact style={{ width: "100%" }}>
+            <Form.Item
+              label="用户名"
+              name="username"
+              validateTrigger="onBlur"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入用户名",
+                },
+                {
+                  type: "string",
+                  min: 3,
+                  max: 15,
+                  message: "用户名长度为5-12位",
+                },
+                {
+                  pattern: /^\w+$/,
+                  message: "只能是字母数字下划线",
+                },
+              ]}
+            >
+              <Input placeholder="5-12位字母数字或下划线" />
+            </Form.Item>
+            <Form.Item
+              label="邮箱"
+              name="email"
+              rules={[
+                { required: true, message: "请输入邮箱" },
+                { pattern: EMAILEXP, message: "请输入正确格式的邮箱" },
+              ]}
+              validateTrigger="onBlur"
+            >
               <Input />
-              <Button type="primary" disabled={isDisabled} onClick={sendCode}>
-                {btnStr}
-              </Button>
-            </Space.Compact>
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                注册
-              </Button>
-              <Link to="/login">已有账户，请登录</Link>
-            </Space>
-          </Form.Item>
-        </Form>
+            </Form.Item>
+            <Form.Item
+              label="验证码"
+              name="code"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入验证码",
+                },
+              ]}
+              validateTrigger="onBlur"
+            >
+              <Space.Compact style={{ width: "100%" }}>
+                <Input />
+                <Button type="primary" disabled={isDisabled} onClick={sendCode}>
+                  {btnStr}
+                </Button>
+              </Space.Compact>
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 4, span: 16 }}>
+              <div className={styles.operationArea}>
+                <Button type="primary" htmlType="submit">
+                  注册
+                </Button>
+                <Link to="/login">已有账户，请登录</Link>
+              </div>
+            </Form.Item>
+          </Form>
+        </div>
       </div>
     </div>
   );

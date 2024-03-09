@@ -1,9 +1,8 @@
-import { createSlice, nanoid, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ComponentPropsType } from "../../components/QuestionComponents";
 import cloneDeep from "lodash.clonedeep";
 import { getNextSelectedId, insertNewComponent } from "./utils";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useUpdateComponentIndex } from "../../hooks/useUpdateComponentIndex";
 
 export type ComponentInfoType = {
   id: number;
@@ -14,7 +13,7 @@ export type ComponentInfoType = {
   isLocked: number;
   props: ComponentPropsType;
   qId: number;
-  create_time: string;
+  create_time?: string;
 };
 export type AddComponentInfoType = {
   indexId: number;
@@ -24,7 +23,7 @@ export type AddComponentInfoType = {
   isLocked: number;
   props: ComponentPropsType;
   qId: number;
-  create_time: string;
+  create_time?: string;
 };
 
 export type ComponentsStateType = {
@@ -106,8 +105,6 @@ export const componentsSlice = createSlice({
       } else {
         state.deleteComponentIdsArr = [...deleteComponentIdsArr, removeId];
       }
-      console.log(addComponentIdsArr);
-
       //重新计算selectedId
       const newSelectedId = getNextSelectedId(removeId, componentList);
       state.selectedId = newSelectedId;
@@ -226,7 +223,6 @@ export const componentsSlice = createSlice({
     ) => {
       const { addComponentIdsArr } = state;
       state.addComponentIdsArr = [...addComponentIdsArr, action.payload.id];
-      console.log(state.addComponentIdsArr);
     },
 
     //删除组件id
@@ -243,12 +239,8 @@ export const componentsSlice = createSlice({
           ...addComponentIdsArr.slice(index + 1),
         ];
       } else {
-        console.log(id);
-
         state.deleteComponentIdsArr = [...deleteComponentIdsArr, id];
       }
-      console.log(state.addComponentIdsArr);
-      console.log(state.deleteComponentIdsArr);
     },
 
     //清空删除组件数组

@@ -1,3 +1,4 @@
+import type { FC, ReactNode } from "react";
 import React, { useState } from "react";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
 import styles from "./index.module.scss";
@@ -10,8 +11,6 @@ import useGetStatInfo from "../../../../hooks/useGetStat";
 const ComponentList = () => {
   const dispatch = useDispatch();
   const { id: selectedComponentId } = useGetStatInfo();
-  console.log(selectedComponentId);
-
   const { componentList } = useGetComponentInfo();
 
   return (

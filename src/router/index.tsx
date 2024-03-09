@@ -12,7 +12,6 @@ import Trash from "../pages/manage/Trash";
 import Edit from "../pages/question/Edit";
 import Stat from "../pages/question/Stat";
 import SubmitAnswer from "../pages/SubmitAnswer";
-import QuestionLayout from "../layouts/QuestionLayout";
 
 const router = createBrowserRouter([
   {
@@ -66,6 +65,10 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/error",
+    element: <NotFound />,
+  },
+  {
     path: "*", //404
     element: <NotFound />,
   },
@@ -75,13 +78,10 @@ export default router;
 
 export function isLoginOrRegister(pathname: string) {
   if (["/login", "/register"].includes(pathname)) return true;
-  console.log("需要登录");
-
   return false;
 }
 
 export function isNoNeedUserInfo(pathname: string) {
   if (["/login", "/register", "/"].includes(pathname)) return true;
-  console.log("不需要登录");
   return false;
 }

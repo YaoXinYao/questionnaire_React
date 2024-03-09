@@ -45,3 +45,13 @@ export async function getLoginUserInfoService() {
   let data = axios.get(url) as ResDataType;
   return data;
 }
+
+//修改信息
+export async function updateUserInfoService(props: {
+  id: number;
+  username: string;
+}) {
+  const url = "/api/user/updateUserInfo";
+  let data = axios.patch(url, props) as ResDataType;
+  return data;
+}

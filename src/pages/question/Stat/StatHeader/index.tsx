@@ -18,7 +18,6 @@ import useGetPageInfo from "../../../../hooks/useGetPageInfo";
 import Title from "antd/es/typography/Title";
 const { useToken } = theme;
 
-
 const StatHeader: FC = () => {
   const navgate = useNavigate();
   const { title, isPublished } = useGetPageInfo();
@@ -77,14 +76,7 @@ const StatHeader: FC = () => {
           </Space>
         </div>
         <div className={styles.main}>{getLinkAndQRCodeElem()}</div>
-        <div className={styles.right}>
-          <Button
-            type="primary"
-            onClick={() => navgate(`/question/edit/${id}`)}
-          >
-            编辑问卷
-          </Button>
-        </div>
+        <div className={styles.right}></div>
       </div>
     </div>
   );

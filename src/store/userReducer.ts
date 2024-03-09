@@ -3,11 +3,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type UserStateType = {
   id: number;
   username: string;
+  token: string;
+  email: string;
 };
 
 const INIT_STATE: UserStateType = {
   id: 0,
   username: "",
+  token: "",
+  email: "",
 };
 
 export const userSlice = createSlice({
@@ -16,9 +20,9 @@ export const userSlice = createSlice({
   reducers: {
     loginReducer: (
       state: UserStateType,
-      action: PayloadAction<UserStateType>
+      action: PayloadAction<Partial<UserStateType>>
     ) => {
-      return action.payload;
+      return { ...state, ...action.payload };
     },
     logoutReducer: () => {
       return INIT_STATE;

@@ -26,7 +26,6 @@ const QuestionRadio: FC<IProps> = ({ id, props }) => {
   const [value, setValue] = useState(PropsValue);
 
   const onChange = (e: RadioChangeEvent) => {
-    console.log("radio checked", e.target.value);
     setValue(e.target.value);
   };
   return (

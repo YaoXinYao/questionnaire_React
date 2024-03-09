@@ -7,13 +7,16 @@ const { Paragraph } = Typography;
 const QuestionInput: FC<QuestionInputPropsType> = (
   props: QuestionInputPropsType
 ) => {
-  const { title, placeholder } = { ...QuestionInputDefaultProps, ...props };
-
+  const {
+    title,
+    placeholder,
+    answer = "",
+  } = { ...QuestionInputDefaultProps, ...props };
   return (
     <div>
       <Paragraph strong>{title}</Paragraph>
       <div>
-        <Input placeholder={placeholder}></Input>
+        <Input placeholder={placeholder} value={answer}></Input>
       </div>
     </div>
   );

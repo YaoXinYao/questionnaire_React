@@ -8,9 +8,9 @@ export type QuestionCheckboxPropsType = {
   title?: string;
   isVertical?: boolean;
   list?: OptionType[];
-
   onChange?: (newProps: QuestionCheckboxPropsType) => void;
   disabled?: boolean;
+  answer?: string;
 };
 
 export const QuestionCheckboxDefaultProps: QuestionCheckboxPropsType = {

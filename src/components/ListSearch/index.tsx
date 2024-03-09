@@ -19,6 +19,7 @@ const ListSearch = () => {
     const newVal = searchParams.get(LIST_SEARCH_PARAM_KEY) || "";
     setValue(newVal);
   }, [searchParams]);
+  
   function handleSearch() {
     nav({
       pathname,

@@ -3,6 +3,7 @@ export type QuestionTextAreaPropsType = {
   placeholder?: string;
   onChange?: (newProps: QuestionTextAreaPropsType) => void;
   disabled?: boolean;
+  answer?: string;
 };
 
 export const QuestionTextAreaDefaultProps: QuestionTextAreaPropsType = {

@@ -23,12 +23,6 @@ import {
 
 import { ActionCreators as UndoActionCreators } from "redux-undo";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
-import {
-  addQuestionItemService,
-  deleteQuestionItemService,
-  updateQuestionItemService,
-} from "../../../../services/question";
-
 const EditToolbar = () => {
   const dispatch = useDispatch();
   const { selectedId, selectedComponent, copiedComponent, componentList } =
@@ -41,7 +35,6 @@ const EditToolbar = () => {
 
   //删除组件
   async function handleDelete() {
-    console.log(selectedId);
     dispatch(removeSelectedComponent());
   }
 

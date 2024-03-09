@@ -1,0 +1,16 @@
+.page {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.listArea {
+  display: flex;
+  flex-direction: column;
+}
+
+.searchKey {
+  margin-right: 0;
+  margin: 20px 0;
+  align-self: flex-end;
+}

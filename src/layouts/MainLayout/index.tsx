@@ -24,13 +24,7 @@ const MainLayout = () => {
       </Header>
       <Layout className={styles.main}>
         <Content>
-          {waiting ? (
-            <div style={{ textAlign: "center", marginTop: "60px" }}>
-              <Spin />
-            </div>
-          ) : (
-            <Outlet />
-          )}
+          <Outlet />
         </Content>
       </Layout>
 

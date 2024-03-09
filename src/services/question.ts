@@ -45,8 +45,6 @@ export async function updateQuestionService(opt: {
 }): Promise<ResDataType> {
   const url = `/api/questionnaire/updateQuestionnaire`;
   const data = (await axios.patch(url, opt)) as ResDataType;
-  console.log("更新问卷：", data);
-
   return data;
 }
 
@@ -77,12 +75,8 @@ export async function updateQuestionItemService(
 
 //更新问卷项的索引
 export async function updateQuestionItemIndexService(params: Array<number>) {
-  console.log("更新索引参数：", params);
-
   const url = "/api/questionnaire/updateQuestionItemIndex";
   const data = (await axios.post(url, params)) as ResDataType;
-  console.log("更新索引结果：", data);
-
   return data;
 }
 
@@ -90,7 +84,6 @@ export async function updateQuestionItemIndexService(params: Array<number>) {
 export async function deleteQuestionItemService(ids: Array<number>) {
   const url = "/api/questionnaire/deleteQuestionItems";
   const data = (await axios.delete(url, { params: { ids } })) as ResDataType;
-  console.log("删除问卷项目：", data);
   return data;
 }
 
@@ -98,8 +91,6 @@ export async function deleteQuestionItemService(ids: Array<number>) {
 export async function deleteQuestionnaireService(
   ids: number[]
 ): Promise<ResDataType> {
-  console.log(ids);
-
   const url = `/api/questionnaire/deleteQuestionnaire`;
   const data = (await axios.delete(url, { params: { ids } })) as ResDataType;
   return data;

@@ -18,6 +18,7 @@ import {
   Popover,
   QRCode,
   theme,
+  Input,
 } from "antd";
 import React, { FC, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -92,20 +93,19 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
           isPublished: 0,
           creatorId: userId,
         });
-        console.log(createQuestionRes);
         if (createQuestionRes.code == 0) {
           for (let i = 0; i < componentList.length; i++) {
             componentList[i].qId = createQuestionRes.info.id;
             delete componentList[i].id;
           }
         }
-
-        console.log(componentList);
-
         let addQuestionItemRes = await addQuestionItemService(componentList);
-        console.log(addQuestionItemRes);
-        updateList(createQuestionRes.info);
-        message.success("复制成功");
+        if (addQuestionItemRes.code == 0) {
+          updateList(createQuestionRes.info);
+          message.success("复制成功");
+        } else {
+          message.error("复制失败");
+        }
       }
     },
     {
@@ -139,9 +139,12 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
   }
 
   let QRcodeContent = (
-    <Space>
+    <Space direction="vertical" align="center">
+      <Input
+        value={`http://localhost:5173/question/submitAnswer/${props.id}`}
+      />
       <QRCode
-        value="https://ant.design/"
+        value={`http://localhost:5173/question/submitAnswer/${props.id}`}
         color={token.colorInfoText}
         bgColor={token.colorBgLayout}
       />

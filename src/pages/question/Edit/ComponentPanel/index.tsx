@@ -6,13 +6,17 @@ import {
 } from "../../../../components/QuestionComponents";
 import styles from "./index.module.scss";
 import { useDispatch } from "react-redux";
-import {
-  addComponent,
-} from "../../../../store/componentsReducer";
+import { addComponent } from "../../../../store/componentsReducer";
+import { useParams } from "react-router-dom";
 
 const { Title } = Typography;
 
 function genComponent(c: ComponentConfType) {
+  const { id: paramsId } = useParams();
+  if (!paramsId) {
+    return null;
+  }
+  const id = Number.parseInt(paramsId);
   const { title, type, Component, defaultProps } = c;
   const dispatch = useDispatch();
 
@@ -24,7 +28,7 @@ function genComponent(c: ComponentConfType) {
       props: defaultProps,
       isHidden: 0,
       isLocked: 0,
-      qId: 1,
+      qId: id,
     };
 
     dispatch(addComponent(addComponentProps));

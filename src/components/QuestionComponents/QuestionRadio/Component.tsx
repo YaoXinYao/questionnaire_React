@@ -11,12 +11,19 @@ const Component: FC<QuestionRadioPropsType> = (
     options = [],
     value,
     isVertical,
+    answer = "",
   } = { ...QuestionRadioDefaultProps, ...props };
+  let defaultValue = value;
+  if (answer != "") {
+    defaultValue = answer;
+  } else {
+    defaultValue = value;
+  }
 
   return (
     <div>
       <Paragraph strong>{title}</Paragraph>
-      <Radio.Group value={value}>
+      <Radio.Group value={defaultValue}>
         <Space direction={isVertical ? "vertical" : "horizontal"}>
           {options.map((opt) => {
             const { value, text } = opt;

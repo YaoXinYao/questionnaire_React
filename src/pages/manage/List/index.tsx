@@ -6,8 +6,9 @@ import { Empty, Spin, Typography } from "antd";
 import ListSearch from "../../../components/ListSearch";
 import { useSearchParams } from "react-router-dom";
 import { getQuestionListService } from "../../../services/question";
-import { LIST_PAGE_SIZE, LIST_SEARCH_PARAM_KEY } from "../../../constant";
+import { LIST_SEARCH_PARAM_KEY } from "../../../constant";
 import { QuestionnaireResType } from "../../../type/question";
+import useGetUserInfo from "../../../hooks/useGetUserInfo";
 const { Title } = Typography;
 
 const List = () => {
@@ -22,7 +23,7 @@ const List = () => {
   const haveMoreData = total > list.length;
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get(LIST_SEARCH_PARAM_KEY) || "";
-
+  const { id: userId } = useGetUserInfo();
   //搜索时重新加载
   useEffect(() => {
     setStarted(false);
@@ -39,8 +40,8 @@ const List = () => {
         pageSize,
         isDeleted: 0,
         title: keyword,
+        creatorId: userId,
       });
-      console.log(data);
 
       return data;
     },
@@ -106,9 +107,9 @@ const List = () => {
       return <Empty description="暂无数据" />;
     }
     if (!haveMoreData) {
-      return <span>没有更多了</span>;
+      return <span>加载完成</span>;
     }
-    return <span>开始加载下一页</span>;
+    return <Spin />;
   }, [started, loading, total, haveMoreData]);
 
   return (
