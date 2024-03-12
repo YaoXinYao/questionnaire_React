@@ -95,7 +95,7 @@ const UserInfo = () => {
 
   return (
     <>
-      {token != "" || !token ? userInfo : login}
+      {token != "" ? userInfo : login}
       <Modal
         title="提示"
         open={isLogout}

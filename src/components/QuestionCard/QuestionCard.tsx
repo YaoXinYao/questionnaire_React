@@ -21,7 +21,7 @@ import {
   Input,
 } from "antd";
 import React, { FC, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   addQuestionItemService,
   createQuestionService,
@@ -170,11 +170,23 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
         </div>
         <div className={styles.right}>
           <Space>
-            <Popover content={QRcodeContent}>
-              <Button type="text" icon={<SendOutlined />} size="small">
+            {isPublished == 1 && (
+              <Popover content={QRcodeContent}>
+                <Button type="text" icon={<SendOutlined />} size="small">
+                  分享
+                </Button>
+              </Popover>
+            )}
+            {isPublished == 0 && (
+              <Button
+                type="text"
+                icon={<SendOutlined />}
+                size="small"
+                disabled={true}
+              >
                 分享
               </Button>
-            </Popover>
+            )}
             <Popconfirm
               title="确定复制该问卷吗？"
               okText="确定"
