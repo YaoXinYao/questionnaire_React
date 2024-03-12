@@ -1,5 +1,5 @@
 import { useRequest } from "ahooks";
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getQuestionService } from "../services/question";
@@ -16,7 +16,7 @@ function useLoadQuestionData() {
   ) as idStateType;
 
   const dispatch = useDispatch();
-  let isToRun = true;
+  // let isToRun = true;
 
   const { data, loading, error, run } = useRequest(
     async (id: number) => {
@@ -24,7 +24,8 @@ function useLoadQuestionData() {
         throw new Error("未获取到问卷信息");
       }
       const data = await getQuestionService(id);
-      isToRun = false;
+
+      // isToRun = false;
       return data.info;
     },
     {

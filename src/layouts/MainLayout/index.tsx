@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import styles from "./index.module.scss";
 
-import { Layout, Spin } from "antd";
+import { Layout } from "antd";
 import Logo from "../../components/Logo";
 import UserInfo from "../../components/UserInfo";
 import useLoadUserData from "../../hooks/useLoadUserData";

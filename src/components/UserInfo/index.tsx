@@ -1,5 +1,5 @@
 import { UserOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Space, message } from "antd";
+import { Button, Form, Input, Modal, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,7 +7,7 @@ import useGetUserInfo from "../../hooks/useGetUserInfo";
 import { loginReducer, logoutReducer } from "../../store/userReducer";
 import { removeToken } from "../../utils/user-token";
 import styles from "./index.module.scss";
-import { sendCodeService, updateUserInfoService } from "../../services/user";
+import { updateUserInfoService } from "../../services/user";
 import { useForm } from "antd/es/form/Form";
 
 const UserInfo = () => {
@@ -18,10 +18,10 @@ const UserInfo = () => {
   const { username: name = "", id = 0, email, token } = useGetUserInfo();
 
   const [isOpen, setOpen] = useState(false);
+  const [isLogout, setIsLogout] = useState(false);
 
   useEffect(() => {
     setUsername(name);
-    // form.setFieldsValue({ username });
   }, [isOpen]);
 
   function logout() {
@@ -29,13 +29,14 @@ const UserInfo = () => {
     removeToken();
     localStorage.clear();
     message.success("退出成功！");
+    setIsLogout(false);
     nav("/login");
   }
 
   function handleOk() {
     form
       .validateFields()
-      .then(async (value) => {
+      .then(async (_value) => {
         let res = await updateUserInfoService({
           id,
           username: form.getFieldsValue().username,
@@ -70,13 +71,21 @@ const UserInfo = () => {
     setOpen(true);
   }
 
+  function isLogoutHandleCancel() {
+    setIsLogout(false);
+  }
+
+  function isLogoutHandleOk() {
+    setIsLogout(true);
+  }
+
   const userInfo = (
     <>
       <span onClick={updateUserInfo} className={styles.userInfo}>
         <UserOutlined />
-        {username}
+        {name}
       </span>
-      <Button type="link" onClick={logout}>
+      <Button type="link" onClick={isLogoutHandleOk}>
         退出
       </Button>
     </>
@@ -86,7 +95,15 @@ const UserInfo = () => {
 
   return (
     <>
-      {username ? userInfo : login}
+      {token != "" || !token ? userInfo : login}
+      <Modal
+        title="提示"
+        open={isLogout}
+        onOk={logout}
+        onCancel={isLogoutHandleCancel}
+      >
+        <p>确认退出登录吗？</p>
+      </Modal>
       <Modal
         title="用户信息"
         open={isOpen}

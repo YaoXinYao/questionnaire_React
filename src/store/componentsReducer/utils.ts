@@ -1,5 +1,4 @@
 import { ComponentInfoType, ComponentsStateType } from ".";
-import { useUpdateComponentIndex } from "../../hooks/useUpdateComponentIndex";
 
 export function getNextSelectedId(
   id: number,

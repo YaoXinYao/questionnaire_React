@@ -1,5 +1,4 @@
-import type { FC, ReactNode } from "react";
-import React, { useState } from "react";
+import React from "react";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
 import styles from "./index.module.scss";
 import { getComponentConfByType } from "../../../../components/QuestionComponents";

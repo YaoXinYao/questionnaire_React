@@ -6,7 +6,7 @@ import { getComponent } from "../../components/AnswerComponents";
 import { QuestionType } from "../../type/question";
 import { useRequest } from "ahooks";
 import { getQuestionService } from "../../services/question";
-import { Button, Form, Result, message } from "antd";
+import { Button, Form, Result, Spin, message } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { isDoneService, submitService } from "../../services/answer";
 import useGetUserInfo from "../../hooks/useGetUserInfo";
@@ -27,7 +27,7 @@ type PropsType = {
 export default function SubmitAnswer() {
   const [form] = useForm();
   const navigate = useNavigate();
-  const [isDone, setIsDone] = useState<boolean>(true);
+  const [isDone = 0, setIsDone] = useState<boolean>(true);
   let [componentList, setComponentList] = useState<Array<QuestionType>>([]);
   let params = useParams();
   if (!params.id) {
@@ -36,10 +36,10 @@ export default function SubmitAnswer() {
   let id = Number.parseInt(params.id);
   let { id: userId = 0 } = useGetUserInfo();
 
-  const { run } = useRequest(
+  const { run, loading: questionLoading } = useRequest(
     async (id: number) => {
       const resData = (await getQuestionService(id)) as PropsType;
-      let { code, info, msg } = resData;
+      let { code, info } = resData;
       let { isDeleted, isPublished, componentList } = info;
       if (code !== 0 || isDeleted || !isPublished) {
         navigate("/error");
@@ -52,7 +52,7 @@ export default function SubmitAnswer() {
     }
   );
 
-  const { run: isDoneRun } = useRequest(
+  const { run: isDoneRun, loading: doneLoading } = useRequest(
     async () => {
       let isDoneRes = await isDoneService({ userId, questionnaireId: id });
       if (isDoneRes.code == 0) {
@@ -116,7 +116,8 @@ export default function SubmitAnswer() {
 
   return (
     <>
-      {isDone && (
+      {(questionLoading || doneLoading) && <Spin />}
+      {!questionLoading && !doneLoading && isDone && (
         <Result
           status="warning"
           title="您已经完成该问卷"
@@ -127,7 +128,7 @@ export default function SubmitAnswer() {
           }
         />
       )}
-      {!isDone && (
+      {!questionLoading && !doneLoading && !isDone && (
         <div className={styles.container}>
           <Form form={form}>
             {ComponentListElem}

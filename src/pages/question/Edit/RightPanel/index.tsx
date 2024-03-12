@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FileTextOutlined } from "@ant-design/icons";
 import { Tabs } from "antd";
 import ComponentProp from "../ComponentProp";
-import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";
 import QuestionnireDescription from "../QuestionnireDescription";
 
 enum TAB_KEY {
@@ -12,7 +11,6 @@ enum TAB_KEY {
 
 const RightPanel = () => {
   const [activeKey, setActiveKey] = useState(TAB_KEY.PROP_KEY);
-  const { selectedId } = useGetComponentInfo();
 
   function changeTab(key: string) {
     setActiveKey(key as TAB_KEY); // 将 string 类型转换为 TAB_KEY 类型

@@ -1,9 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
-import { UserStateType, loginReducer } from "../store/userReducer";
+import {  useSelector } from "react-redux";
+import { UserStateType } from "../store/userReducer";
 import { StateType } from "../store";
 
 function useLoadUserData() {
-  const { id, username, token } = useSelector<StateType>(
+  const { id } = useSelector<StateType>(
     (state) => state.user
   ) as UserStateType;
   if (id && id != 0) {

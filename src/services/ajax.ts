@@ -1,7 +1,6 @@
 import { message } from "antd";
 import axios from "axios";
 import { getToken } from "../utils/user-token";
-import { useNavigate } from "react-router-dom";
 
 const instance = axios.create({
   timeout: 5 * 1000,
@@ -21,7 +20,7 @@ instance.interceptors.request.use(
 //response拦截器：统一拦截code和msg
 instance.interceptors.response.use((res) => {
   const resData = (res.data || {}) as ResType;
-  const { code, msg, info } = resData;
+  const { code, info } = resData;
   // if (resData.code === 401) {
   //   localStorage.clear();
   //   history.replaceState(null, "", "/login"); // 使用 history.replaceState 进行页面跳转

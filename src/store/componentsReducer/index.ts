@@ -48,7 +48,7 @@ export const componentsSlice = createSlice({
   reducers: {
     //重置
     resetComponents: (
-      state: ComponentsStateType,
+      _state: ComponentsStateType,
       action: PayloadAction<ComponentsStateType>
     ) => {
       return action.payload;
@@ -194,7 +194,7 @@ export const componentsSlice = createSlice({
       state: ComponentsStateType,
       action: PayloadAction<{ id: number; title: string }>
     ) => {
-      const { selectedId, componentList } = state;
+      const { componentList } = state;
       const { title, id } = action.payload;
       const curComp = state.componentList.find((c) => c.id === id);
       const index = state.componentList.findIndex((c) => c.id === id);

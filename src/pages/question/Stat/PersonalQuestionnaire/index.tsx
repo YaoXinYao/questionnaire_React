@@ -1,10 +1,8 @@
-import { Drawer, DrawerProps, message } from "antd";
-import type { FC, ReactNode } from "react";
+import { Drawer, message } from "antd";
 import React, { useEffect, useState } from "react";
 import useGetStatInfo from "../../../../hooks/useGetStat";
 import { useRequest } from "ahooks";
 import { getUserAnswerService } from "../../../../services/answer";
-import useGetUserInfo from "../../../../hooks/useGetUserInfo";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateSelectedUserId } from "../../../../store/statReducer";
@@ -43,7 +41,7 @@ const PersonalQuestionnaire = () => {
     }
   }, [selectedUserId]);
 
-  let { loading, run } = useRequest(async () => {
+  let { run } = useRequest(async () => {
     let { code, info } = await getUserAnswerService({
       userId: selectedUserId,
       questionnaireId,
@@ -65,8 +63,6 @@ const PersonalQuestionnaire = () => {
       setList(newList);
     }
   });
-
-  const [placement, setPlacement] = useState<DrawerProps["placement"]>("right");
   const onClose = () => {
     setOpen(false);
     dispatch(updateSelectedUserId({ id: -1, username: "" }));
@@ -76,7 +72,7 @@ const PersonalQuestionnaire = () => {
     <>
       <Drawer
         title={<>{username}的答卷</>}
-        placement={placement}
+        placement="right"
         width={500}
         onClose={onClose}
         open={open}
@@ -92,7 +88,6 @@ const PersonalQuestionnaire = () => {
               }
               let { Component } = componentConf;
               const wrapperDefaultClassName = styles["componentWrapper"];
-              const selectedClassName = styles.selected;
               const wrapperClassName = classNames({
                 [wrapperDefaultClassName]: true,
               });

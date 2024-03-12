@@ -19,7 +19,7 @@ const pageInfoSlice = createSlice({
   initialState: INIT_STATE,
   reducers: {
     resetPageInfo: (
-      state: PageInfoType,
+      _state: PageInfoType,
       action: PayloadAction<PageInfoType>
     ) => {
       return action.payload;

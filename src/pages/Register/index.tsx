@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Space, Typography, Input, Form, Button, message } from "antd";
-import { UserAddOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 
 import styles from "./index.module.scss";
@@ -16,7 +15,7 @@ const Register = () => {
   const [form] = useForm();
   const [isDisabled, setIsDisabled] = useState(false);
   const [btnStr, setBtnStr] = useState("发送验证码");
-  const { loading: regiserLoading, run: register } = useRequest(
+  const { run: register } = useRequest(
     async (values: { username: string; email: string; code: string }) => {
       let { username, email, code } = values;
       const data = await registerService(username, email, code);

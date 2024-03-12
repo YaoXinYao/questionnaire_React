@@ -8,7 +8,7 @@ import {
   Table,
   TableColumnsType,
 } from "antd";
-import type { ChangeEvent, FC, ReactNode } from "react";
+import type { ChangeEvent } from "react";
 import React, { useEffect, useState } from "react";
 import { getSubmitListService } from "../../../../services/answer";
 import { useParams } from "react-router-dom";
@@ -48,7 +48,7 @@ const FormList = () => {
       });
 
       if (res.code == 0) {
-        const { data, total, totalPages, currentPage, count } = res.info;
+        const { data, total,currentPage } = res.info;
         const newPagination = { ...pagination, total, current: currentPage };
         setPagination(newPagination);
         const newArr = [];

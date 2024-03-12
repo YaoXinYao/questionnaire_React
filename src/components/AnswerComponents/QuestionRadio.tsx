@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import styles from "./QuestionRadio.module.scss";
 import React, { useState } from "react";
 import { Form, Radio, RadioChangeEvent, Space } from "antd";

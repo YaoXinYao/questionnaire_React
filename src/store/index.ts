@@ -2,7 +2,7 @@ import { configureStore, Reducer } from "@reduxjs/toolkit";
 import undoable, { excludeAction, StateWithHistory } from "redux-undo";
 import componentsReducer, { ComponentsStateType } from "./componentsReducer";
 import userReducer, { UserStateType } from "./userReducer";
-import questionIdReducer, { idStateType } from "./questionIdReducer";
+import questionIdReducer from "./questionIdReducer";
 import pageInfoReducer, { PageInfoType } from "./pageInfoReducer";
 import statReducer, { StatType } from "./statReducer";
 import { persistReducer, persistStore } from "redux-persist";

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import styles from "./index.module.scss";
 import { Space, Button, Divider, message } from "antd";
 import {
   PlusOutlined,
   BarsOutlined,
-  StarOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
 import { createQuestionService } from "../../services/question";
@@ -17,24 +16,8 @@ const ManageLayout = () => {
   const nav = useNavigate();
   const { pathname } = useLocation();
   const { id: userId = 0 } = useGetUserInfo();
-
-  // const [loading, setLoading] = useState(false);
-  // async function handleCreateClick() {
-  //   setLoading(true);
-  //   const data = await createQuestionService();
-  //   const { id } = data || {};
-  //   if (id) {
-  //     nav(`/question/edit/${id}`);
-  //     message.success("创建成功");
-  //   } else {
-  //     message.error("创建失败");
-  //   }
-  //   setLoading(false);
-  // }
-
   const {
     loading,
-    error,
     run: handleCreateClick,
   } = useRequest(
     async () => {

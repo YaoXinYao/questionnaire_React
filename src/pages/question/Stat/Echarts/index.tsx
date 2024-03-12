@@ -29,7 +29,7 @@ const Echarts = () => {
           answerKey: chooseItem[i].value,
         });
 
-        const { info, code, msg } = res;
+        const { info, code} = res;
         if (code == 0) {
           newOptions[chooseItem[i]] = info;
           newOptions.push({ value: info, name: chooseItem[i].text });

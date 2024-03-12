@@ -17,7 +17,8 @@ const List = () => {
   //是否已经开始加载
   const [started, setStarted] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  // const [pageSize, setPageSize] = useState(8);
+  const pageSize = 10;
   const [list, setList] = useState<QuestionnaireResType[]>([]);
   const [total, setTotal] = useState(0);
   const haveMoreData = total > list.length;
@@ -48,13 +49,7 @@ const List = () => {
     {
       manual: true,
       onSuccess(result) {
-        const {
-          data,
-          total = 0,
-          totalPages = 0,
-          currentPage = 0,
-          count = 0,
-        } = result.info;
+        const { data, total = 0 } = result.info;
         setList(list.concat(data));
         setTotal(total);
         setPage(page + 1);

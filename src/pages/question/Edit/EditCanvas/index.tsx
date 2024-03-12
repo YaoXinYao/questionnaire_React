@@ -1,6 +1,6 @@
 import { Spin } from "antd";
 import classNames from "classnames";
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 import { useDispatch } from "react-redux";
 import { getComponentConfByType } from "../../../../components/QuestionComponents";
 import useGetComponentInfo from "../../../../hooks/useGetComponentInfo";

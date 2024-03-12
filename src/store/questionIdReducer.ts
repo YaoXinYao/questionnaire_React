@@ -13,7 +13,7 @@ export const componentsSlice = createSlice({
   initialState: INIT_STATE,
   reducers: {
     //重置
-    getQuestionId: (state: idStateType, action: PayloadAction<idStateType>) => {
+    getQuestionId: (_state: idStateType, action: PayloadAction<idStateType>) => {
       return action.payload;
     },
   },

@@ -17,9 +17,9 @@ const Logo = () => {
   return (
     <div className={styles.container}>
       <Link to={pathname}>
-        <Space>
+        <Space align="center">
           <Title>
-            <CloudServerOutlined />
+            <img src="/favicon.png" className={styles.logo} />
           </Title>
           <Title>乐答问卷</Title>
         </Space>

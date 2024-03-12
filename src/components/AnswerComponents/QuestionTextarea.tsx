@@ -1,4 +1,4 @@
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import styles from "./QuestionTextarea.module.scss";
 import React from "react";
 import TextArea from "antd/es/input/TextArea";
@@ -19,10 +19,7 @@ const QuestionTextarea: FC<IProps> = ({ id, props }) => {
       <p className={styles.title}>{title}</p>
       <div className={styles.textareaWrapper}>
         <Form.Item name={id}>
-          <TextArea
-            placeholder={placeholder}
-            autoSize={{ minRows: 2 }}
-          />
+          <TextArea placeholder={placeholder} autoSize={{ minRows: 2 }} />
         </Form.Item>
       </div>
     </>

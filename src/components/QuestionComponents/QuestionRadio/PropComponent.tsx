@@ -2,7 +2,6 @@ import React, { FC, useEffect } from "react";
 import { OptionType, QuestionRadioPropsType } from ".";
 import { Button, Checkbox, Form, Input, Select, Space } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { nanoid } from "@reduxjs/toolkit";
 
 const PropComponent: FC<QuestionRadioPropsType> = (
   props: QuestionRadioPropsType

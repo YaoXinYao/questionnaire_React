@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import useLoadQuesionData from "../../../hooks/useLoadQuestionData";
 import useGetPageInfo from "../../../hooks/useGetPageInfo";
 import { Button, Result, Spin } from "antd";
@@ -16,8 +16,6 @@ const Stat = () => {
   const { title, isPublished } = useGetPageInfo();
   const navigate = useNavigate();
   useTitle(`统计问卷-${title}`);
-  let [selectedComponentId, setSelectedComponentId] = useState(-1);
-  let [selectedComponentType, setSelectedComponentType] = useState("");
   const loadingElem = (
     <div style={{ textAlign: "center", marginTop: "60px" }}>
       <Spin />

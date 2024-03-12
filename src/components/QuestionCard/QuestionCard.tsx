@@ -21,12 +21,10 @@ import {
   Input,
 } from "antd";
 import React, { FC, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   addQuestionItemService,
-  copyQuestionService,
   createQuestionService,
-  getQuestionListService,
   getQuestionService,
   updateQuestionService,
 } from "../../services/question";
@@ -49,37 +47,12 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
   const nav = useNavigate();
   const { token } = useToken();
   const { confirm } = Modal;
-  const {
-    id,
-    title,
-    description,
-    isPublished,
-    isDeleted,
-    create_time,
-    creatorId,
-    updateList,
-  } = props;
+  const { id, title, isPublished, create_time, updateList } = props;
   const { id: userId } = useGetUserInfo();
-  // const [isStarState, setIsStarState] = useState(isStar);
-
-  //更新
-  // const { loading: changeStarLoading, run: changeStar } = useRequest(
-  //   async () => {
-  //     const data = await updateQuestionService(id);
-  //     return data;
-  //   },
-  //   {
-  //     manual: true,
-  //     onSuccess(result) {
-  //       setIsStarState(!isStarState);
-  //       message.success("已更新");
-  //     },
-  //   }
-  // );
-
-  // function duplicate() {
-  //   message.success("复制成功");
-  // }
+  // 获取当前页面的协议、主机和端口
+  const protocol = window.location.protocol;
+  const host = window.location.host;
+  const baseUrl = `${protocol}//${host}`;
 
   //复制
   const { loading: copyLoading, run: copy } = useRequest(
@@ -140,11 +113,9 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
 
   let QRcodeContent = (
     <Space direction="vertical" align="center">
-      <Input
-        value={`http://localhost:5173/question/submitAnswer/${props.id}`}
-      />
+      <Input value={`${baseUrl}/question/submitAnswer/${props.id}`} />
       <QRCode
-        value={`http://localhost:5173/question/submitAnswer/${props.id}`}
+        value={`${baseUrl}/question/submitAnswer/${props.id}`}
         color={token.colorInfoText}
         bgColor={token.colorBgLayout}
       />

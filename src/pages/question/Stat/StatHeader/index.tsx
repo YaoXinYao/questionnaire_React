@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import type { FC, ReactNode } from "react";
+import React, { useRef } from "react";
+import type { FC } from "react";
 import styles from "./index.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -35,7 +35,11 @@ const StatHeader: FC = () => {
     document.execCommand("copy");
     message.success("复制成功");
   }
-  const url = `http://localhost:5173/question/submitAnswer/${id}`;
+
+  const protocol = window.location.protocol;
+  const host = window.location.host;
+  const baseUrl = `${protocol}//${host}`;
+  const url = `${baseUrl}/question/submitAnswer/${id}`;
   const QRCodeElem = (
     <QRCode
       value={url}

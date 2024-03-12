@@ -1,9 +1,6 @@
 import React from "react";
 import { getToken } from "../utils/user-token";
 import { createBrowserHistory } from "history";
-import Login from "../pages/Login";
-import { redirect, useNavigate } from "react-router-dom";
-import { message } from "antd";
 const history = createBrowserHistory();
 const ALLOWPAGES = ["/", "/login", "/register"];
 

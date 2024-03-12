@@ -1,4 +1,4 @@
-import { useState, type FC, type ReactNode, useEffect } from "react";
+import { useState, type FC, useEffect } from "react";
 import styles from "./QuestionCheckbox.module.scss";
 import React from "react";
 import { Checkbox, Form, Space } from "antd";
@@ -24,7 +24,8 @@ const QuestionCheckbox: FC<IProps> = ({ id, props }) => {
     list.forEach((item) => {
       const { value, checked } = item;
       if (checked) {
-        setSelectedValue((selectedValue) => selectedValue.concat(value));
+        let newSelected = [...selectedValue, value];
+        setSelectedValue(newSelected);
       }
     });
   }, [list]);
@@ -32,7 +33,6 @@ const QuestionCheckbox: FC<IProps> = ({ id, props }) => {
   return (
     <>
       <p className={styles.title}>{title}</p>
-      {/* <input type="hidden" name={id + ""} value={selectedValue.toString()} /> */}
       <Form.Item name={id}>
         <Checkbox.Group>
           <Space direction={direction}>

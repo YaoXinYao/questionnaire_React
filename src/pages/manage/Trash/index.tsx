@@ -39,7 +39,6 @@ const Trash = () => {
   const keyword = searchParams.get(LIST_SEARCH_PARAM_KEY) || "";
   const {
     loading,
-    error,
     data = {},
     refresh,
   } = useLoadQuestionListData({
@@ -57,18 +56,12 @@ const Trash = () => {
   }, [keyword, page, pageSize]);
 
   const { info = {} } = data;
-  const {
-    data: dataList = {},
-    total = 0,
-    totalPages = 0,
-    count = 0,
-    currentPage = 1,
-  } = info;
+  const { data: dataList = {}, total = 0, currentPage = 1 } = info;
   initList = dataList;
 
   //选中的id
   //恢复
-  const { loading: recoverLoading, run: recoverQuestion } = useRequest(
+  const { run: recoverQuestion } = useRequest(
     async () => {
       for await (const id of selectedIds) {
         await updateQuestionService({ id, isDeleted: 0 });
@@ -86,7 +79,7 @@ const Trash = () => {
   );
 
   //删除
-  const { loading: deleteLoading, run: deleteQuestion } = useRequest(
+  const { run: deleteQuestion } = useRequest(
     async () => {
       await deleteQuestionnaireService(selectedIds);
     },
