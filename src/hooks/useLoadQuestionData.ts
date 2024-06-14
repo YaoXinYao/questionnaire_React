@@ -24,7 +24,6 @@ function useLoadQuestionData() {
         throw new Error("未获取到问卷信息");
       }
       const data = await getQuestionService(id);
-
       // isToRun = false;
       return data.info;
     },

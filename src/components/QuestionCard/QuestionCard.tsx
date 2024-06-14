@@ -161,7 +161,7 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
               icon={<LineChartOutlined />}
               type="text"
               size="small"
-              onClick={() => nav(`/question/stat/${id}`)}
+              onClick={() => (location.href = `/question/stat/${id}`)}
               disabled={isPublished == 0}
             >
               问卷统计

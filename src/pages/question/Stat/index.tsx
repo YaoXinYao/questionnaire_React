@@ -14,8 +14,6 @@ import PersonalQuestionnaire from "./PersonalQuestionnaire";
 const Stat = () => {
   const { loading } = useLoadQuesionData();
   const { title, isPublished } = useGetPageInfo();
-  console.log(isPublished);
-
   const navigate = useNavigate();
   useTitle(`统计问卷-${title}`);
   const loadingElem = (

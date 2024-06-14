@@ -91,11 +91,6 @@ const Echarts = () => {
     }
     const newChart = echarts.init(echartRef.current);
     newChart.setOption(echartsOption);
-
-    // newChart.on("click", (params: any) => {
-    //   // 在此处处理点击事件，params 包含了点击事件的信息，例如点击的数据项等
-    //   console.log("点击事件信息：", params);
-    // });
   }, [echartsOption]);
 
   return (

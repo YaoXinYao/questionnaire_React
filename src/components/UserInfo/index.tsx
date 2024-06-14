@@ -7,7 +7,7 @@ import useGetUserInfo from "../../hooks/useGetUserInfo";
 import { loginReducer, logoutReducer } from "../../store/userReducer";
 import { removeToken } from "../../utils/user-token";
 import styles from "./index.module.scss";
-import { updateUserInfoService } from "../../services/user";
+import { logoutService, updateUserInfoService } from "../../services/user";
 import { useForm } from "antd/es/form/Form";
 
 const UserInfo = () => {
@@ -24,13 +24,18 @@ const UserInfo = () => {
     setUsername(name);
   }, [isOpen]);
 
-  function logout() {
-    dispatch(logoutReducer());
-    removeToken();
-    localStorage.clear();
-    message.success("退出成功！");
-    setIsLogout(false);
-    nav("/login");
+  async function logout() {
+    let res = await logoutService();
+    if (res.code == 0) {
+      dispatch(logoutReducer());
+      removeToken();
+      localStorage.clear();
+      message.success("退出成功！");
+      setIsLogout(false);
+      nav("/login");
+    } else {
+      message.error("退出失败");
+    }
   }
 
   function handleOk() {

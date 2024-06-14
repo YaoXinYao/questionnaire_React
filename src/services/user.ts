@@ -55,3 +55,10 @@ export async function updateUserInfoService(props: {
   let data = axios.patch(url, props) as ResDataType;
   return data;
 }
+
+//退出登录
+export async function logoutService() {
+  const url = `/api/user/logout`;
+  let data = axios.post(url) as ResDataType;
+  return data;
+}
